@@ -1,0 +1,67 @@
+@import "tailwindcss";
+
+/*
+ * Design tokens — MTDNA
+ * Extraidos do arquivo Figma "My Travel DNA - Wireframes"
+ * (paleta confirmada por leitura de pixel nos swatches do style tile).
+ */
+@theme {
+  /* Paleta da marca */
+  --color-brand-yellow: #f4c70b;
+  --color-brand-navy: #002132;
+  --color-brand-teal: #10485b;
+  --color-brand-coral: #ff8877;
+  --color-brand-cream: #f7ede5;
+
+  /* Variacao clara do coral, usada em estados de botao no wireframe */
+  --color-brand-coral-soft: #fda093;
+
+  /* Tipografia — Roboto, confirmada no style tile do Figma.
+     Auto-hospedada em /public/fonts e injetada por next/font/local. */
+  --font-sans: var(--font-roboto), ui-sans-serif, system-ui, sans-serif;
+
+  /* Raio dos "cantos assimetricos": o padrao recorrente do layout e
+     3 cantos arredondados + 1 reto. Ver utilitarios abaixo. */
+  --radius-card: 2rem;
+  --radius-pill: 9999px;
+}
+
+/*
+ * Container do conteudo.
+ *
+ * Medido no wireframe do Figma a 1440px: o conteudo vai de x=170 a x=1272,
+ * ou seja 1102px de largura. Com box-sizing border-box, 1150px de largura
+ * maxima menos 24px de padding de cada lado da exatamente esses 1102px.
+ */
+@utility container-mtdna {
+  margin-inline: auto;
+  max-width: 1150px;
+  padding-inline: 1.5rem;
+}
+
+/*
+ * Utilitarios para o padrao de canto assimetrico que aparece em heros,
+ * cards de marca e no bloco "Beneficios para voce e seu cliente".
+ */
+@utility corner-br-flat {
+  border-radius: var(--radius-card) var(--radius-card) 0 var(--radius-card);
+}
+
+@utility corner-bl-flat {
+  border-radius: var(--radius-card) var(--radius-card) var(--radius-card) 0;
+}
+
+@utility corner-tr-flat {
+  border-radius: var(--radius-card) 0 var(--radius-card) var(--radius-card);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #ffffff;
+  color: var(--color-brand-navy);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
