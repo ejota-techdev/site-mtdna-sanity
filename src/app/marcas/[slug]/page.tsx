@@ -41,7 +41,7 @@ export default async function BrandPage({ params }: Props) {
 
       <main>
         {/* ---------- Topo ---------- */}
-        <section className="relative h-[380px] w-full md:h-[460px]">
+        <section className="relative h-[380px] w-full md:h-[700px]">
           <SanityImage
             image={brand.heroImage}
             alt={brand.name}
@@ -49,7 +49,7 @@ export default async function BrandPage({ params }: Props) {
             className="object-cover"
             priority
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/0 via-black/20 to-transparent" />
 
           <div className="absolute right-0 bottom-10 left-0 container-mtdna flex flex-col gap-4">
             <div className="relative h-14 w-56">
