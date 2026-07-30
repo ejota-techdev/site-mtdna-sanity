@@ -1,3 +1,5 @@
+type OuterCorner = "tl" | "tr" | "bl" | "br";
+
 /**
  * Grafismo de quatro quadrantes com cantos arredondados que se encontram
  * no centro. Aparece em amarelo no bloco "sobre" da Home e em branco na
@@ -8,10 +10,53 @@
 export function DecorGrid({
   className,
   stroke = "currentColor",
+  strokeWidth = 2,
+  rounded = ["tl", "tr", "bl", "br"],
+  outerRadius = 59,
 }: {
   className?: string;
   stroke?: string;
+  strokeWidth?: number;
+  /** Cantos EXTERNOS a arredondar. Os internos (centro) sao sempre curvos. */
+  rounded?: OuterCorner[];
+  outerRadius?: number;
 }) {
+  const L = 1;
+  const T = 1;
+  const R = 473;
+  const B = 424;
+  const cxL = 237;
+  const cxR = 239;
+  const cyT = 211;
+  const cyB = 213;
+  const ri = 59;
+  const ro = outerRadius;
+
+  const has = (c: OuterCorner) => rounded.includes(c);
+
+  const tl = has("tl")
+    ? `H ${L} V ${T + ro} A ${ro} ${ro} 0 0 1 ${L + ro} ${T} Z`
+    : `H ${L} V ${T} Z`;
+
+  const tr = has("tr")
+    ? `H ${R} V ${T + ro} A ${ro} ${ro} 0 0 0 ${R - ro} ${T} Z`
+    : `H ${R} V ${T} Z`;
+
+  const bl = has("bl")
+    ? `H ${L} V ${B - ro} A ${ro} ${ro} 0 0 0 ${L + ro} ${B} Z`
+    : `H ${L} V ${B} Z`;
+
+  const br = has("br")
+    ? `H ${R} V ${B - ro} A ${ro} ${ro} 0 0 1 ${R - ro} ${B} Z`
+    : `H ${R} V ${B} Z`;
+
+  const paths = [
+    `M ${cxL} ${T} V ${cyT - ri} A ${ri} ${ri} 0 0 1 ${cxL - ri} ${cyT} ${tl}`,
+    `M ${cxR} ${T} V ${cyT - ri} A ${ri} ${ri} 0 0 0 ${cxR + ri} ${cyT} ${tr}`,
+    `M ${cxL} ${B} V ${cyB + ri} A ${ri} ${ri} 0 0 0 ${cxL - ri} ${cyB} ${bl}`,
+    `M ${cxR} ${B} V ${cyB + ri} A ${ri} ${ri} 0 0 1 ${cxR + ri} ${cyB} ${br}`,
+  ];
+
   return (
     <svg
       viewBox="0 0 474 425"
@@ -20,26 +65,9 @@ export function DecorGrid({
       className={className}
       xmlns="http://www.w3.org/2000/svg"
     >
-      <path
-        d="M239 424V272C239 239.415 265.415 213 298 213H473V424H239Z"
-        stroke={stroke}
-        strokeWidth="2"
-      />
-      <path
-        d="M60 424H237V272C237 239.415 210.585 213 178 213H1V365C1 397.33 27.004 423.587 59.2373 423.995L60 424Z"
-        stroke={stroke}
-        strokeWidth="2"
-      />
-      <path
-        d="M237 1V152C237 184.585 210.585 211 178 211H1V1H237Z"
-        stroke={stroke}
-        strokeWidth="2"
-      />
-      <path
-        d="M239 1V152C239 184.585 265.415 211 298 211H473V1H239Z"
-        stroke={stroke}
-        strokeWidth="2"
-      />
+      {paths.map((d, i) => (
+        <path key={i} d={d} stroke={stroke} strokeWidth={strokeWidth} />
+      ))}
     </svg>
   );
 }
