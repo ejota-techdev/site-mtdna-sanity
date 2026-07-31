@@ -3,12 +3,28 @@
 import { useState } from "react";
 
 import { SanityImage } from "@/components/SanityImage";
-import type { HighlightCard, SanityImage as SanityImageType } from "@/sanity/lib/types";
+import type {
+  HighlightCard,
+  SanityImage as SanityImageType,
+} from "@/sanity/lib/types";
 
-/**
- * Imagem grande a esquerda e dois cards a direita. Os cards abrem ao clicar
- * no "+", revelando o texto — como indicado no wireframe.
+/*
+ * Medidas tiradas dos wireframes 10, 11 e 12 (canvas de 1440px):
+ *
+ *   foto grande .......... 526x418, cantos sup-esq e inf-dir com raio 53px
+ *   card fechado ......... 527x200, apenas inf-dir com raio 47px
+ *   intervalo entre cards. 18px      (200 + 18 + 200 = 418, igual a foto)
+ *   coluna x coluna ...... 52px
+ *
+ *   card aberto (wf 10/12) ocupa os mesmos 418px:
+ *     faixa de imagem .... 125px, inf-dir arredondado
+ *     caixa de texto ..... resto, borda 1px #10485B, inf-dir raio 44px
+ *
+ * A altura total da secao nao muda entre fechado e aberto — por isso a foto
+ * ao lado nunca se mexe.
  */
+const ALTURA = "md:h-[418px]";
+
 export function HighlightSection({
   image,
   cards,
@@ -16,13 +32,15 @@ export function HighlightSection({
   image?: SanityImageType;
   cards?: HighlightCard[];
 }) {
-  const [open, setOpen] = useState<number | null>(null);
+  const [aberto, setAberto] = useState<number | null>(null);
 
   if (!cards?.length) return null;
 
   return (
-    <section className="container-mtdna grid gap-6 py-16 md:grid-cols-2">
-      <div className="corner-br-flat relative min-h-[320px] overflow-hidden md:min-h-[420px]">
+    <section className="container-mtdna grid gap-8 py-16 md:grid-cols-2 md:gap-[52px]">
+      <div
+        className={`relative h-[320px] self-start overflow-hidden rounded-tl-[52px] rounded-br-[52px] ${ALTURA}`}
+      >
         <SanityImage
           image={image}
           alt=""
@@ -31,28 +49,27 @@ export function HighlightSection({
         />
       </div>
 
-      <div className="flex flex-col gap-6">
+      <div className={`flex flex-col gap-[18px] ${ALTURA}`}>
         {cards.map((card, i) => {
-          const isOpen = open === i;
+          const estaAberto = aberto === i;
+
+          // Enquanto um card esta aberto, ele ocupa a coluna inteira —
+          // e como os wireframes 10 e 12 mostram o estado expandido.
+          if (aberto !== null && !estaAberto) return null;
 
           return (
             <article
               key={i}
-              className={`overflow-hidden transition-all ${
-                isOpen ? "ring-brand-teal corner-br-flat ring-1" : ""
-              }`}
+              className={estaAberto ? "flex min-h-0 flex-1 flex-col" : "flex-1"}
             >
               <button
                 type="button"
-                onClick={() => setOpen(isOpen ? null : i)}
-                aria-expanded={isOpen}
-                className="corner-br-flat group relative block h-40 w-full overflow-hidden text-left"
+                onClick={() => setAberto(estaAberto ? null : i)}
+                aria-expanded={estaAberto}
+                className={`group relative w-full shrink-0 overflow-hidden rounded-br-[48px] text-left ${
+                  estaAberto ? "h-[125px]" : "h-full min-h-[160px]"
+                }`}
               >
-                {/*
-                  A imagem vem colorida do CMS e e exibida em P&B. O hover
-                  (e o foco por teclado) devolve a cor. `motion-reduce`
-                  respeita quem pediu menos animacao no sistema.
-                */}
                 <SanityImage
                   image={card.image}
                   alt=""
@@ -67,7 +84,7 @@ export function HighlightSection({
 
                 <span
                   className={`text-brand-coral absolute top-4 right-6 text-3xl leading-none transition-transform ${
-                    isOpen ? "rotate-45" : ""
+                    estaAberto ? "rotate-45" : ""
                   }`}
                   aria-hidden="true"
                 >
@@ -75,8 +92,8 @@ export function HighlightSection({
                 </span>
               </button>
 
-              {isOpen && card.body && (
-                <div className="px-6 py-6">
+              {estaAberto && card.body && (
+                <div className="border-brand-teal min-h-0 flex-1 overflow-y-auto rounded-br-[44px] border px-6 py-6">
                   <p className="text-sm leading-relaxed whitespace-pre-line text-neutral-700">
                     {card.body}
                   </p>
