@@ -9,18 +9,71 @@ O cliente edita todo o conteudo pelo painel; o site em si e React.
 - **Tailwind CSS 4** — tokens de design definidos em `src/app/globals.css`
 - **Sanity** — CMS, painel embutido em `/studio`
 
-## Como rodar
+## Como rodar (primeira vez na sua máquina)
 
-Pre-requisito: **Node.js 20 ou superior**.
+Pré-requisito: **Node.js 20 ou superior** (`node --version` para conferir).
+
+**1. Clone e instale**
 
 ```bash
+git clone https://github.com/marcelohenrique10/mtdna_sanity.git
+cd mtdna_sanity
 npm install
-cp .env.local.example .env.local   # e preencha os valores
+```
+
+**2. Crie o `.env.local`**
+
+Esse arquivo não vem no repositório de propósito — guarda credencial.
+
+```bash
+cp .env.local.example .env.local
+```
+
+Peça os valores a quem já está no projeto. Os três primeiros não são segredo
+e são iguais para todo mundo. **O token de escrita você provavelmente não
+precisa** — veja abaixo.
+
+**3. Peça acesso ao Sanity**
+
+Sem isso o site roda, mas o painel em `/studio` recusa o login. Um
+administrador precisa convidar seu e-mail em
+[sanity.io/manage](https://www.sanity.io/manage) → projeto → Members.
+
+**4. Suba o servidor**
+
+```bash
 npm run dev
 ```
 
 - Site: http://localhost:3000
-- Painel de conteudo: http://localhost:3000/studio
+- Painel de conteúdo: http://localhost:3000/studio
+
+O CORS do Sanity já autoriza `http://localhost:3000` para todo mundo — não
+há configuração por máquina.
+
+> **Não rode `npx sanity dev`.** Esse comando abre um Studio avulso em
+> `localhost:3333`, sem os nossos schemas — a tela fica com "No document
+> types". O nosso Studio é embutido no Next.js: `npm run dev` e
+> `localhost:3000/studio`.
+
+### Preciso do token de escrita?
+
+**Quase sempre não.** O site inteiro lê conteúdo por uma API pública:
+páginas, imagens e o Studio funcionam sem token nenhum.
+
+O `SANITY_API_WRITE_TOKEN` serve para **uma coisa só**: gravar os envios do
+formulário de contato. Sem ele, tudo funciona e só o envio retorna erro.
+
+Se precisar, **peça a um administrador** — criar token exige papel
+Administrator, e quem edita conteúdo normalmente é Editor.
+
+> **Para quem administra:** gere um token por pessoa, nomeado (`dev-joao`),
+> role Editor. Continua individual e revogável sem afetar os outros. Não
+> promova ninguém a Administrator só para isso — esse papel também apaga
+> datasets, remove membros e mexe na cobrança.
+>
+> Entregue por gerenciador de senhas ou link que expira. Nunca por chat,
+> e-mail, issue ou commit. Se vazar, revogue e gere outro.
 
 > **Nunca rode `npm run build` com o `npm run dev` ligado.**
 > Os dois escrevem na mesma pasta `.next`: o build a reescreve e o servidor de
@@ -46,7 +99,8 @@ para gravar os envios do formulario de contato — nunca deve ir para o browser.
 | `/sobre` · `/sobre-nosotros` · `/about` | Sobre Nós (PT · ES · EN) |
 | `/contato` | Contato |
 | `/studio` | Painel do Sanity |
-| `/api/contato` | Recebe o formulário e grava no CMS |
+| `/api/contato` | Recebe o formulário de contato e grava no CMS |
+| `/api/newsletter` | Recebe a assinatura da newsletter e grava no CMS |
 
 ## Scripts auxiliares
 
@@ -55,6 +109,8 @@ node scripts/seed.mjs                        # cria só o que falta — não toc
 node scripts/seed.mjs --sobrescrever         # DESTRUTIVO: volta tudo ao conteúdo original
 node scripts/mensagens.mjs                   # lista as mensagens recebidas
 node scripts/mensagens.mjs --limpar-testes   # remove registros de teste
+node scripts/assinantes.mjs                  # lista assinantes da newsletter
+node scripts/assinantes.mjs --csv            # exporta a lista em CSV
 ```
 
 > **Atenção ao `--sobrescrever`.**
@@ -88,6 +144,7 @@ src/
 | `brand` | Marca parceira | 3 — Europcar, Goldcar, Unlock |
 | `post` | Publicacao | ilimitado |
 | `contactSubmission` | Mensagem do formulario | gerado pelo site |
+| `newsletterSubscriber` | Assinante da newsletter | gerado pelo site |
 
 Decisoes que valem registrar:
 
@@ -95,8 +152,15 @@ Decisoes que valem registrar:
   wireframe com dropdown de idioma. O resto do site e em portugues.
 - **Marcas e publicacoes na Home** nao sao editadas dentro da Home: vem dos
   seus proprios documentos, para o cliente editar cada coisa em um lugar so.
-- **Mensagens de contato** sao somente leitura no painel, para ninguem editar
-  um lead por engano.
+- **Mensagens de contato e assinantes** sao somente leitura no painel, para
+  ninguem editar um lead por engano.
+- **Assinantes nao duplicam**: o `_id` do documento e derivado de um hash do
+  e-mail, entao assinar varias vezes atualiza o mesmo registro. O e-mail em
+  si nao faz parte do id.
+
+> **Ninguem e notificado** quando chega mensagem de contato ou assinatura —
+> os registros ficam esperando no painel. Antes de entregar ao cliente, vale
+> ligar notificacao por e-mail, senao um lead pode passar dias sem ser visto.
 
 ## Design tokens
 

@@ -30,6 +30,9 @@ export const structure: StructureResolver = (S) =>
       S.divider(),
 
       S.documentTypeListItem("contactSubmission").title("Mensagens recebidas"),
+      S.documentTypeListItem("newsletterSubscriber").title(
+        "Assinantes da newsletter",
+      ),
 
       S.divider(),
 

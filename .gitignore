@@ -21,3 +21,8 @@ dist/
 
 # logs temporarios de build/install
 *.log
+
+# Preferencias do Claude Code de cada maquina. Versionar so gera conflito:
+# cada pessoa autoriza comandos diferentes, e o arquivo nao tem valor para
+# o projeto.
+.claude/settings.local.json

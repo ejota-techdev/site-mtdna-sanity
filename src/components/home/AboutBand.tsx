@@ -12,19 +12,25 @@ export function AboutBand({
 }) {
   return (
     <section className="bg-brand-teal relative overflow-hidden py-24">
-      {/* Grafismos laterais — topo visível, sangram pela lateral e pela base */}
-      <DecorGrid
-        stroke="#F4C70B"
-        strokeWidth={3}
-        className="pointer-events-none absolute top-1/2 -left-32 hidden h-[calc(100%+2rem)] w-[500px] -translate-y-1/2 lg:block"
-      />
-      <DecorGrid
-        stroke="#F4C70B"
-        strokeWidth={3}
-        className="pointer-events-none absolute top-1/2 -right-32 hidden h-[calc(100%+2rem)] w-[500px] -translate-y-1/2 scale-x-[-1] lg:block"
-      />
-
       <div className="relative mx-auto flex max-w-[800px] flex-col items-center gap-12 px-6">
+        {/*
+          Grafismos laterais.
+          Ancorados ao bloco de texto (`right-full` / `left-full`), nunca a
+          bordas fixas da janela: `right-full` encosta a borda direita da
+          grade na borda esquerda do texto, entao a sobreposicao e impossivel
+          por construcao, seja qual for a largura da tela ou do texto.
+          O `overflow-hidden` da secao corta o que sangra para fora.
+        */}
+        <DecorGrid
+          stroke="#F4C70B"
+          strokeWidth={3}
+          className="pointer-events-none absolute top-1/2 right-full mr-12 hidden h-[calc(100%+4rem)] w-[500px] -translate-y-1/2 lg:block"
+        />
+        <DecorGrid
+          stroke="#F4C70B"
+          strokeWidth={3}
+          className="pointer-events-none absolute top-1/2 left-full ml-12 hidden h-[calc(100%+4rem)] w-[500px] -translate-y-1/2 scale-x-[-1] lg:block"
+        />
         <div className="flex flex-col gap-6 text-left">
           {text?.map((paragraph, i) => (
             <p key={i} className="text-[25px] leading-relaxed text-white">
