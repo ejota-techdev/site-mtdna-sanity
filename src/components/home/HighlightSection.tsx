@@ -23,7 +23,8 @@ import type {
  * A altura total da secao nao muda entre fechado e aberto — por isso a foto
  * ao lado nunca se mexe.
  */
-const ALTURA = "md:h-[418px]";
+/** Altura da foto — fixa, para nao acompanhar o card ao lado. */
+const ALTURA_FOTO = "md:h-[418px]";
 
 export function HighlightSection({
   image,
@@ -39,7 +40,7 @@ export function HighlightSection({
   return (
     <section className="container-mtdna grid gap-8 py-16 md:grid-cols-2 md:gap-[52px]">
       <div
-        className={`relative h-[320px] self-start overflow-hidden rounded-tl-[52px] rounded-br-[52px] ${ALTURA}`}
+        className={`relative h-[320px] self-start overflow-hidden rounded-tl-[52px] rounded-br-[52px] ${ALTURA_FOTO}`}
       >
         <SanityImage
           image={image}
@@ -49,7 +50,14 @@ export function HighlightSection({
         />
       </div>
 
-      <div className={`flex flex-col gap-[18px] ${ALTURA}`}>
+      {/*
+        A coluna nao tem altura travada: as pecas somam os 418px do wireframe
+        quando o texto cabe, e crescem quando nao cabe. Travar a altura
+        obrigaria a barra de rolagem — e o texto vem do painel, entao o
+        comprimento nao esta sob nosso controle. Como a foto ao lado usa
+        `self-start` com altura propria, ela nao se mexe de qualquer forma.
+      */}
+      <div className="flex flex-col gap-[18px]">
         {cards.map((card, i) => {
           const estaAberto = aberto === i;
 
@@ -60,14 +68,14 @@ export function HighlightSection({
           return (
             <article
               key={i}
-              className={estaAberto ? "flex min-h-0 flex-1 flex-col" : "flex-1"}
+              className={estaAberto ? "flex flex-col" : "h-[200px]"}
             >
               <button
                 type="button"
                 onClick={() => setAberto(estaAberto ? null : i)}
                 aria-expanded={estaAberto}
                 className={`group relative w-full shrink-0 overflow-hidden rounded-br-[48px] text-left ${
-                  estaAberto ? "h-[125px]" : "h-full min-h-[160px]"
+                  estaAberto ? "h-[125px]" : "h-full"
                 }`}
               >
                 <SanityImage
@@ -92,8 +100,9 @@ export function HighlightSection({
                 </span>
               </button>
 
+              {/* min-h reproduz os 293px do wireframe; cresce se o texto pedir. */}
               {estaAberto && card.body && (
-                <div className="border-brand-teal min-h-0 flex-1 overflow-y-auto rounded-br-[44px] border px-6 py-6">
+                <div className="border-brand-teal min-h-[293px] rounded-br-[44px] border px-6 py-6">
                   <p className="text-sm leading-relaxed whitespace-pre-line text-neutral-700">
                     {card.body}
                   </p>

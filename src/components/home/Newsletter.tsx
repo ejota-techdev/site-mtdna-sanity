@@ -21,15 +21,15 @@ export function Newsletter({
         className="absolute top-0 right-0 hidden h-full w-[43%] md:block"
       >
         {/*
-          O logo-simbolo.svg tem ~3% de margem vazia dentro do próprio arquivo.
+          O logo-simbolo.png tem ~3% de margem vazia dentro do próprio arquivo.
           A caixa da máscara é esticada para -3% / 106% para que o bloco
           visível encoste de fato no topo e na base da seção.
         */}
         <div
           className="bg-brand-cream absolute -top-[3%] right-0 left-[10%] h-[106%]"
           style={{
-            maskImage: "url(/logo-simbolo.svg)",
-            WebkitMaskImage: "url(/logo-simbolo.svg)",
+            maskImage: "url(/logo-simbolo.png)",
+            WebkitMaskImage: "url(/logo-simbolo.png)",
             maskSize: "auto 100%",
             WebkitMaskSize: "auto 100%",
             maskRepeat: "no-repeat",
