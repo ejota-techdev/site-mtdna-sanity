@@ -118,7 +118,6 @@ export const brandBySlugQuery = defineQuery(`
     featureImage ${IMAGE},
     featureCta,
     highlights,
-    galleryTitle,
     gallery[] ${IMAGE},
     benefitsTitle, benefits,
     showLocationMap, locationsIntro, locations,

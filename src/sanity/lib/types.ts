@@ -121,7 +121,6 @@ export type Brand = {
   featureImage?: SanityImage;
   featureCta?: Cta;
   highlights?: string[];
-  galleryTitle?: string;
   gallery?: SanityImage[];
   benefitsTitle?: string;
   benefits?: string[];

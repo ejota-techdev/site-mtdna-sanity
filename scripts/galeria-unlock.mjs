@@ -1,14 +1,15 @@
 /**
- * Preenche o carrossel de propriedades da Unlock.
+ * Preenche o carrossel do topo da pagina da Unlock.
  *
- *   node scripts/galeria-unlock.mjs
+ *   node scripts/galeria-unlock.mjs               grava se estiver vazio
+ *   node scripts/galeria-unlock.mjs --substituir  troca o que ja existe
  *
- * Usa `patch().set()`, que altera SOMENTE os campos `gallery` e
- * `galleryTitle`. Todo o resto do documento — textos, imagens, links que
- * voce tenha editado no painel — fica intacto.
+ * Usa `patch().set()`, que altera SOMENTE o campo `gallery`. Todo o resto do
+ * documento — textos, imagem principal, links que voce tenha editado no
+ * painel — fica intacto.
  *
- * As imagens e a ordem vieram da coluna posicionada ao lado da pagina da
- * Unlock no arquivo do Figma.
+ * A imagem principal (heroImage) nao entra aqui: ela ja e o primeiro slide,
+ * montada no proprio componente.
  */
 import { createClient } from "@sanity/client";
 import { createReadStream, readFileSync, existsSync } from "node:fs";
@@ -37,29 +38,30 @@ const client = createClient({
   useCdn: false,
 });
 
-/** Ordem exata da coluna de imagens no Figma. */
+/** Ordem em que aparecem no carrossel, depois da imagem principal. */
 const IMAGENS = [
-  ["Group 24.png", "Fachada histórica portuguesa ao entardecer"],
-  ["image 36.png", "Hotel contemporâneo com piscina e jardim"],
-  ["Group 25.png", "Edifício de madeira com vista para vinhedos"],
-  ["Group 26.png", "Propriedade ao pé de castelo medieval"],
-  ["Group 27.png", "Arquitetura moderna entre a vegetação"],
-  ["Group 28.png", "Casario português iluminado ao anoitecer"],
-  ["image 35.png", "Piscina cercada por guarda-sóis ao entardecer"],
-  ["image 37.png", "Vista da janela sobre o rio Douro"],
+  ["carrossel_unlock.png", "Piscina de borda infinita com guarda-sóis"],
+  ["carrossel_unlock_1.png", "Hotel contemporâneo com piscina e jardim"],
+  ["carrossel_unlock_2.png", "Edifício de madeira com vista para vinhedos"],
+  ["carrossel_unlock_3.png", "Propriedade ao pé de castelo medieval"],
+  ["carrossel_unlock_4.png", "Arquitetura moderna entre a vegetação"],
+  ["carrossel_unlock_5.png", "Casario português iluminado ao anoitecer"],
+  ["carrossel_unlock_6.png", "Piscina cercada por guarda-sóis ao entardecer"],
+  ["carrossel_unlock_7.png", "Vista da janela sobre o rio Douro"],
 ];
 
 const ID_MARCA = "brand-unlock";
+const SUBSTITUIR = process.argv.includes("--substituir");
 
 async function main() {
   const marca = await client.getDocument(ID_MARCA);
   if (!marca) throw new Error(`Documento ${ID_MARCA} nao encontrado.`);
 
-  if (Array.isArray(marca.gallery) && marca.gallery.length > 0) {
+  if (Array.isArray(marca.gallery) && marca.gallery.length > 0 && !SUBSTITUIR) {
     console.log(
-      `A galeria ja tem ${marca.gallery.length} imagem(ns). Nada foi alterado.`,
+      `O carrossel ja tem ${marca.gallery.length} imagem(ns). Nada foi alterado.`,
     );
-    console.log("Para substituir, apague as imagens no painel e rode de novo.");
+    console.log("Use --substituir para trocar.");
     return;
   }
 
@@ -80,20 +82,18 @@ async function main() {
 
     gallery.push({
       _type: "figureImage",
-      _key: `galeria${gallery.length + 1}`,
+      _key: `topo${gallery.length + 1}`,
       alt,
       asset: { _type: "reference", _ref: asset._id },
     });
   }
 
-  await client
-    .patch(ID_MARCA)
-    .set({ gallery, galleryTitle: "Conheça as propriedades" })
-    .commit();
+  await client.patch(ID_MARCA).set({ gallery }).commit();
 
   console.log(
-    `\nPronto: ${gallery.length} imagens no carrossel. Nenhum outro campo foi tocado.`,
+    `\nPronto: ${gallery.length} imagens + a principal = ${gallery.length + 1} slides.`,
   );
+  console.log("Nenhum outro campo do documento foi tocado.");
 }
 
 main().catch((erro) => {

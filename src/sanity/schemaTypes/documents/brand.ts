@@ -134,21 +134,13 @@ export const brand = defineType({
     }),
     defineField({
       name: "gallery",
-      title: "Carrossel de imagens",
+      title: "Demais imagens do topo",
       description:
-        "Fotos das propriedades, exibidas em carrossel. Deixe vazio para ocultar a secao.",
+        "Entram no carrossel do topo, depois da imagem principal. Deixe vazio para o topo ficar com uma imagem so, sem carrossel.",
       type: "array",
       of: [defineArrayMember({ type: "figureImage" })],
-      group: "content",
+      group: "hero",
       options: { layout: "grid" },
-    }),
-    defineField({
-      name: "galleryTitle",
-      title: "Titulo do carrossel",
-      type: "string",
-      group: "content",
-      hidden: ({ document }) =>
-        !Array.isArray(document?.gallery) || document.gallery.length === 0,
     }),
 
     defineField({

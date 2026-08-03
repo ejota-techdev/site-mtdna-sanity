@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 
-import { BrandGallery } from "@/components/BrandGallery";
+import { BrandHero } from "@/components/BrandHero";
 import { DecorGrid } from "@/components/DecorGrid";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
@@ -40,31 +40,19 @@ export default async function BrandPage({ params }: Props) {
       <Header />
 
       <main>
-        {/* ---------- Topo ---------- */}
-        <section className="relative h-[380px] w-full md:h-[700px]">
-          <SanityImage
-            image={brand.heroImage}
-            alt={brand.name}
-            sizes="100vw"
-            className="object-cover"
-            priority
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/0 via-black/20 to-transparent" />
-
-          <div className="absolute right-0 bottom-10 left-0 container-mtdna flex flex-col gap-4">
-            <div className="relative h-14 w-56">
-              <SanityImage
-                image={brand.logoLight ?? brand.logo}
-                alt={brand.name}
-                sizes="224px"
-                className="object-contain object-left"
-              />
-            </div>
-            {brand.tagline && (
-              <p className="text-white drop-shadow-sm">{brand.tagline}</p>
-            )}
-          </div>
-        </section>
+        {/*
+          ---------- Topo ----------
+          A imagem principal e sempre o primeiro slide; as do carrossel vem
+          depois. Com uma imagem so, o componente renderiza estatico.
+        */}
+        <BrandHero
+          images={[brand.heroImage, ...(brand.gallery ?? [])].filter(
+            (img): img is NonNullable<typeof img> => Boolean(img?.asset),
+          )}
+          brandName={brand.name}
+          logo={brand.logoLight ?? brand.logo}
+          tagline={brand.tagline}
+        />
 
         {/* ---------- Abertura ---------- */}
         {(brand.introTitle || brand.introText) && (
@@ -162,15 +150,6 @@ export default async function BrandPage({ params }: Props) {
             </div>
           </section>
         )}
-
-        {/* ---------- Carrossel de propriedades ---------- */}
-        {brand.gallery?.length ? (
-          <BrandGallery
-            images={brand.gallery}
-            title={brand.galleryTitle}
-            brandName={brand.name}
-          />
-        ) : null}
 
         {/* ---------- Caixas de destaque ---------- */}
         {brand.highlights?.length ? (
