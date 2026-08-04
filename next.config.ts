@@ -1,6 +1,15 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  /*
+   * Pasta de saida. Por padrao `.next`, que e a mesma que o `npm run dev`
+   * usa — por isso rodar um build com o dev ligado derruba o servidor com
+   * erro 500. Definindo BUILD_DIR, o build sai noutro lugar e nao atrapalha:
+   *
+   *   BUILD_DIR=.next-verificacao npm run build
+   */
+  distDir: process.env.BUILD_DIR || ".next",
+
   // O emblema do Next no canto da tela existe so em desenvolvimento — nunca
   // aparece em producao. Desligado aqui por atrapalhar a conferencia visual
   // contra o Figma.
