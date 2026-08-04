@@ -2,7 +2,7 @@
 
 /*
  * Design tokens — MTDNA
- * Extraidos do arquivo Figma "My Travel DNA - Wireframes"
+ * Extraídos do arquivo Figma "My Travel DNA - Wireframes"
  * (paleta confirmada por leitura de pixel nos swatches do style tile).
  */
 @theme {
@@ -13,35 +13,36 @@
   --color-brand-coral: #ff8877;
   --color-brand-cream: #f7ede5;
 
-  /* Variacao clara do coral, usada em estados de botao no wireframe */
+  /* Variação clara do coral, usada em estados de botão no wireframe */
   --color-brand-coral-soft: #fda093;
 
   /* Tipografia — Roboto, confirmada no style tile do Figma.
      Auto-hospedada em /public/fonts e injetada por next/font/local. */
   --font-sans: var(--font-roboto), ui-sans-serif, system-ui, sans-serif;
 
-  /* Raio dos "cantos assimetricos": o padrao recorrente do layout e
-     3 cantos arredondados + 1 reto. Ver utilitarios abaixo. */
+  /* Raio dos "cantos assimétricos": o padrão recorrente do layout é
+     3 cantos arredondados + 1 reto. Ver utilitários abaixo. */
   --radius-card: 2rem;
   --radius-pill: 9999px;
 }
 
 /*
- * Container do conteudo.
- *
- * Medido no wireframe do Figma a 1440px: o conteudo vai de x=170 a x=1272,
- * ou seja 1102px de largura. Com box-sizing border-box, 1150px de largura
- * maxima menos 24px de padding de cada lado da exatamente esses 1102px.
+ * Container do conteúdo.
  */
 @utility container-mtdna {
   margin-inline: auto;
-  max-width: 1150px;
+  /*
+   * 71.875rem = 1150px com a fonte padrao de 16px. Menos os 24px de padding
+   * de cada lado, sobram os 1102px de conteudo medidos no Figma.
+   *
+   * Em rem, nao px, para acompanhar quem aumenta a fonte do navegador.
+   */
+  max-width: 71.875rem;
   padding-inline: 1.5rem;
 }
 
 /*
- * Utilitarios para o padrao de canto assimetrico que aparece em heros,
- * cards de marca e no bloco "Beneficios para voce e seu cliente".
+ * Utilitários para o padrão de canto assimétrico
  */
 @utility corner-br-flat {
   border-radius: var(--radius-card) var(--radius-card) 0 var(--radius-card);
@@ -57,6 +58,19 @@
 
 html {
   scroll-behavior: smooth;
+  /*
+   * Sem `font-size` aqui de proposito.
+   *
+   * Fixar uma escala (ex.: 120%) multiplica cada rem do site e o afasta do
+   * Figma — e nao resolve o que parece resolver. Telas diferem porque a
+   * escala do sistema operacional muda a largura CSS entregue ao navegador:
+   * um monitor de 1920px com escala de 125% no Windows reporta 1536px. Isso
+   * continua acontecendo com qualquer font-size; a escala fixa so deixa tudo
+   * maior para todo mundo.
+   *
+   * Deixando o padrao (16px), quem precisa de texto maior ajusta no proprio
+   * navegador — e como o layout usa rem, ele acompanha.
+   */
 }
 
 body {

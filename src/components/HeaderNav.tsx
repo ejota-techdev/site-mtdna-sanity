@@ -73,11 +73,17 @@ export function HeaderNav({ logo, brands, languages }: Props) {
          */
         className="mx-auto flex w-full max-w-[1440px] items-center gap-6 px-5 py-4 md:px-6 lg:gap-[147px] lg:px-7 lg:py-6"
       >
-        {/* O tamanho do wireframe (205px) so vale no desktop — no celular
-            ocuparia mais da metade da largura da tela. */}
+        {/*
+          O tamanho do wireframe (205px) so vale no desktop — no celular
+          ocuparia mais da metade da largura da tela.
+
+          Em rem, nao px: 12.8125rem = 205px com a fonte padrao de 16px, mas
+          acompanha quem aumenta o tamanho de fonte do navegador. Em px o
+          logo ficaria parado enquanto o menu ao lado cresce.
+        */}
         <Link
           href="/"
-          className="relative block h-16 w-[126px] shrink-0 lg:h-[104px] lg:w-[205px]"
+          className="relative block h-16 w-[7.875rem] shrink-0 lg:h-[6.5rem] lg:w-[12.8125rem]"
         >
           {logo ? (
             <SanityImage
