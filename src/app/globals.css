@@ -31,13 +31,12 @@
  */
 @utility container-mtdna {
   margin-inline: auto;
-  /*
-   * 71.875rem = 1150px com a fonte padrao de 16px. Menos os 24px de padding
-   * de cada lado, sobram os 1102px de conteudo medidos no Figma.
-   *
-   * Em rem, nao px, para acompanhar quem aumenta a fonte do navegador.
+  /* 
+   * Aumentado para 90rem! 
+   * Junto com o zoom de 120%, isso garante que o layout preencha bem
+   * monitores largos e acabe com o excesso de margens brancas.
    */
-  max-width: 71.875rem;
+  max-width: 90rem;
   padding-inline: 1.5rem;
 }
 
@@ -58,19 +57,11 @@
 
 html {
   scroll-behavior: smooth;
-  /*
-   * Sem `font-size` aqui de proposito.
-   *
-   * Fixar uma escala (ex.: 120%) multiplica cada rem do site e o afasta do
-   * Figma — e nao resolve o que parece resolver. Telas diferem porque a
-   * escala do sistema operacional muda a largura CSS entregue ao navegador:
-   * um monitor de 1920px com escala de 125% no Windows reporta 1536px. Isso
-   * continua acontecendo com qualquer font-size; a escala fixa so deixa tudo
-   * maior para todo mundo.
-   *
-   * Deixando o padrao (16px), quem precisa de texto maior ajusta no proprio
-   * navegador — e como o layout usa rem, ele acompanha.
+  /* 
+   * Trava o site inteiro nativamente no zoom de 120%.
+   * Textos, botões e imagens do Tailwind usarão essa nova escala base.
    */
+  font-size: 120%; 
 }
 
 body {

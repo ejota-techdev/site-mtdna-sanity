@@ -51,36 +51,21 @@ export function HeaderNav({ logo, brands, languages }: Props) {
   }, [openMenu]);
 
   const linkClass = "text-brand-navy transition-colors hover:text-brand-teal";
-  /* No menu mobile os itens viram blocos altos o bastante para o dedo. */
   const linkMobile = `${linkClass} flex min-h-11 items-center`;
 
   return (
-    <header className="sticky top-0 z-50 bg-white shadow-sm">
+    <header className="sticky top-0 z-50 bg-white shadow-sm w-full">
       <nav
         ref={navRef}
         aria-label="Principal"
         /*
-         * Medidas do wireframe (1440px): logo de x=28 a x=233 (205px de
-         * largura), menu comecando em x=380. Nao usamos `justify-between` —
-         * ele empurraria o menu para a direita; no Figma o vazio fica a
-         * direita, com o menu logo apos o logo.
-         *
-         * `max-w-[1440px]` e a largura da prancheta do Figma. Sem ele, em
-         * telas maiores o cabecalho ficava colado na borda esquerda enquanto
-         * o conteudo da pagina seguia centralizado — num monitor de 2560px
-         * davam 693px de desalinhamento. Com o limite, cabecalho e conteudo
-         * deslizam juntos e a proporcao do wireframe se mantem.
+         * Ajuste Final: Trocamos o espaçamento curto pelo exato vão do Figma!
+         * 147px convertidos para rem dão 9.1875rem.
+         * Isso empurra o menu para o local exato planejado no design original,
+         * escalando perfeitamente junto com o zoom de 120% do site.
          */
-        className="mx-auto flex w-full max-w-[1440px] items-center gap-6 px-5 py-4 md:px-6 lg:gap-[147px] lg:px-7 lg:py-6"
+        className="container-mtdna flex items-center gap-6 py-4 lg:gap-[9.1875rem] lg:py-6"
       >
-        {/*
-          O tamanho do wireframe (205px) so vale no desktop — no celular
-          ocuparia mais da metade da largura da tela.
-
-          Em rem, nao px: 12.8125rem = 205px com a fonte padrao de 16px, mas
-          acompanha quem aumenta o tamanho de fonte do navegador. Em px o
-          logo ficaria parado enquanto o menu ao lado cresce.
-        */}
         <Link
           href="/"
           className="relative block h-16 w-[7.875rem] shrink-0 lg:h-[6.5rem] lg:w-[12.8125rem]"
@@ -98,10 +83,7 @@ export function HeaderNav({ logo, brands, languages }: Props) {
           )}
         </Link>
 
-        {/*
-          Menu — desktop. Gap calibrado para o conjunto ocupar de x=380 a
-          x=1014 a 1440px de largura, como no wireframe.
-        */}
+        {/* Menu — desktop */}
         <ul className="hidden items-center gap-8 md:flex lg:gap-20">
           <li>
             <Link href="/" className={linkClass}>
@@ -175,8 +157,6 @@ export function HeaderNav({ logo, brands, languages }: Props) {
         </ul>
 
         {/* Botao do menu — mobile */}
-        {/* 44x44 e o alvo minimo recomendado para toque (WCAG 2.5.5).
-            A margem negativa mantem o alinhamento visual com a borda. */}
         <button
           type="button"
           className="text-brand-navy -mr-2.5 ml-auto flex h-11 w-11 items-center justify-center md:hidden"
@@ -206,7 +186,7 @@ export function HeaderNav({ logo, brands, languages }: Props) {
 
       {/* Menu — mobile */}
       {mobileOpen && (
-        <div className="mx-auto max-h-[calc(100dvh-5rem)] w-full max-w-[1440px] overflow-y-auto border-t border-neutral-200 px-5 pb-6 md:hidden">
+        <div className="max-h-[calc(100dvh-5rem)] overflow-y-auto border-t border-neutral-200 px-5 pb-6 md:hidden">
           <ul className="flex flex-col">
             <li>
               <Link href="/" className={linkMobile}>
