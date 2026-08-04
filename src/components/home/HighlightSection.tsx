@@ -3,28 +3,7 @@
 import { useState } from "react";
 
 import { SanityImage } from "@/components/SanityImage";
-import type {
-  HighlightCard,
-  SanityImage as SanityImageType,
-} from "@/sanity/lib/types";
-
-/*
- * Medidas tiradas dos wireframes 10, 11 e 12 (canvas de 1440px):
- *
- *   foto grande .......... 526x418, cantos sup-esq e inf-dir com raio 53px
- *   card fechado ......... 527x200, apenas inf-dir com raio 47px
- *   intervalo entre cards. 18px      (200 + 18 + 200 = 418, igual a foto)
- *   coluna x coluna ...... 52px
- *
- *   card aberto (wf 10/12) ocupa os mesmos 418px:
- *     faixa de imagem .... 125px, inf-dir arredondado
- *     caixa de texto ..... resto, borda 1px #10485B, inf-dir raio 44px
- *
- * A altura total da secao nao muda entre fechado e aberto — por isso a foto
- * ao lado nunca se mexe.
- */
-/** Altura da foto — fixa, para nao acompanhar o card ao lado. */
-const ALTURA_FOTO = "md:h-[418px]";
+import type { HighlightCard, SanityImage as SanityImageType } from "@/sanity/lib/types";
 
 export function HighlightSection({
   image,
@@ -33,15 +12,13 @@ export function HighlightSection({
   image?: SanityImageType;
   cards?: HighlightCard[];
 }) {
-  const [aberto, setAberto] = useState<number | null>(null);
+  const [open, setOpen] = useState<number | null>(null);
 
   if (!cards?.length) return null;
 
   return (
-    <section className="container-mtdna grid gap-8 py-16 md:grid-cols-2 md:gap-[52px]">
-      <div
-        className={`relative h-[320px] self-start overflow-hidden rounded-tl-[52px] rounded-br-[52px] ${ALTURA_FOTO}`}
-      >
+    <section className="container-mtdna grid gap-6 py-16 md:grid-cols-2">
+      <div className="corner-br-flat relative min-h-[320px] overflow-hidden md:min-h-[420px]">
         <SanityImage
           image={image}
           alt=""
@@ -50,49 +27,43 @@ export function HighlightSection({
         />
       </div>
 
-      {/*
-        A coluna nao tem altura travada: as pecas somam os 418px do wireframe
-        quando o texto cabe, e crescem quando nao cabe. Travar a altura
-        obrigaria a barra de rolagem — e o texto vem do painel, entao o
-        comprimento nao esta sob nosso controle. Como a foto ao lado usa
-        `self-start` com altura propria, ela nao se mexe de qualquer forma.
-      */}
-      <div className="flex flex-col gap-[18px]">
+      <div className="flex flex-col gap-6">
         {cards.map((card, i) => {
-          const estaAberto = aberto === i;
-
-          // Enquanto um card esta aberto, ele ocupa a coluna inteira —
-          // e como os wireframes 10 e 12 mostram o estado expandido.
-          if (aberto !== null && !estaAberto) return null;
+          const isOpen = open === i;
 
           return (
             <article
               key={i}
-              className={estaAberto ? "flex flex-col" : "h-[200px]"}
+              // 1. corner-br-flat fixo para garantir o formato correto.
+              // 2. Trocamos o 'ring' (sombra) por 'border' (borda física), o que aniquila o bug do tracejado.
+              // 3. transform-gpu e backface-hidden forçam a renderização limpa na placa de vídeo.
+              className={`relative overflow-hidden bg-white corner-br-flat border transform-gpu backface-hidden transition-all duration-300 ease-out ${
+                isOpen ? "border-brand-teal" : "border-transparent"
+              }`}
             >
               <button
                 type="button"
-                onClick={() => setAberto(estaAberto ? null : i)}
-                aria-expanded={estaAberto}
-                className={`group relative w-full shrink-0 overflow-hidden rounded-br-[48px] text-left ${
-                  estaAberto ? "h-[125px]" : "h-full"
-                }`}
+                onClick={() => setOpen(isOpen ? null : i)}
+                aria-expanded={isOpen}
+                // O fundo escuro (bg-neutral-900) amortece qualquer vazamento de pixel claro da imagem.
+                className="bg-neutral-900 group relative block h-40 w-full overflow-hidden text-left"
               >
                 <SanityImage
                   image={card.image}
                   alt=""
                   sizes="(min-width: 768px) 50vw, 100vw"
-                  className="object-cover grayscale transition-[filter,transform] duration-500 ease-out group-hover:scale-[1.03] group-hover:grayscale-0 group-focus-visible:grayscale-0 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+                  // O scale-[1.02] impede o surgimento de linhas finas nas bordas da foto ao escalar.
+                  className="backface-hidden transform-gpu scale-[1.02] will-change-transform object-cover grayscale transition-[filter,transform] duration-500 ease-out group-hover:scale-[1.04] group-hover:grayscale-0 group-focus-visible:grayscale-0 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
                 />
-                <span className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/10" />
+                <span className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/10 z-0" />
 
-                <span className="absolute bottom-4 left-6 font-bold text-white">
+                <span className="absolute bottom-4 left-6 z-10 font-bold text-white">
                   {card.title}
                 </span>
 
                 <span
-                  className={`text-brand-coral absolute top-4 right-6 text-3xl leading-none transition-transform ${
-                    estaAberto ? "rotate-45" : ""
+                  className={`text-brand-coral absolute top-4 right-6 z-10 text-3xl leading-none transition-transform duration-300 ${
+                    isOpen ? "rotate-45" : ""
                   }`}
                   aria-hidden="true"
                 >
@@ -100,9 +71,8 @@ export function HighlightSection({
                 </span>
               </button>
 
-              {/* min-h reproduz os 293px do wireframe; cresce se o texto pedir. */}
-              {estaAberto && card.body && (
-                <div className="border-brand-teal min-h-[293px] rounded-br-[44px] border px-6 py-6">
+              {isOpen && card.body && (
+                <div className="px-6 py-6 relative z-10">
                   <p className="text-sm leading-relaxed whitespace-pre-line text-neutral-700">
                     {card.body}
                   </p>
