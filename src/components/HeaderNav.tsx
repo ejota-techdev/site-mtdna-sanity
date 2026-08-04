@@ -59,11 +59,13 @@ export function HeaderNav({ logo, brands, languages }: Props) {
         ref={navRef}
         aria-label="Principal"
         /*
-         * Corrigido: Removido o 'container-mtdna'.
-         * Devolvemos os paddings laterais (px-5, md:px-6, lg:px-7) originais 
-         * para que o menu estique 100% da tela e alinhe com o carrossel.
+         * Ajustes Mágicos:
+         * 1. Voltamos com o 'container-mtdna' para a logo alinhar com o carrossel.
+         * 2. Removemos os 'px' avulsos pois o container já cuida disso.
+         * 3. Trocamos o gap gigante (lg:gap-[147px]) por lg:gap-14 para fechar
+         *    o buraco e ficar idêntico ao Figma com o zoom de 120%.
          */
-        className="flex items-center w-full gap-6 px-5 py-4 md:px-6 lg:gap-[147px] lg:px-7 lg:py-6"
+        className="container-mtdna flex items-center gap-6 py-4 lg:gap-14 lg:py-6"
       >
         {/* A logo continua em 'rem' para preservar o zoom maravilhoso de 120% */}
         <Link
