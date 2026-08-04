@@ -23,13 +23,22 @@ export function BrandsSection({
     <>
       <section
         aria-label="Marcas parceiras"
-        className="container-mtdna flex flex-wrap items-center justify-center gap-12 py-14 md:gap-20"
+        /* 
+         * Ajuste: Trocamos o 'py-14' por 'pt-16 pb-8' (mobile) e 'pt-24 pb-12' (desktop).
+         * Isso empurra as logos para baixo, compensando o impacto visual dos
+         * elementos acima e abaixo, centralizando as imagens no espaço em branco.
+         */
+        className="container-mtdna flex flex-wrap items-center justify-center gap-12 pt-16 pb-8 md:gap-20 md:pt-24 md:pb-12"
       >
         {brands.map((brand) => (
           <Link
             key={brand._id}
             href={`/marcas/${brand.slug}`}
-            className="relative block h-11 w-32 transition-opacity hover:opacity-70 sm:w-40"
+            /* 
+             * Aumentamos a altura de h-11 para h-14 (mobile) e sm:h-16 (desktop).
+             * Isso dá mais respiro para as logos se auto-alinharem pelo centro.
+             */
+            className="relative block h-14 w-32 transition-opacity hover:opacity-70 sm:h-16 sm:w-40"
           >
             <SanityImage
               image={brand.logo}
