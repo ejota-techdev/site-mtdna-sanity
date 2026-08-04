@@ -64,8 +64,14 @@ export function HeaderNav({ logo, brands, languages }: Props) {
          * largura), menu comecando em x=380. Nao usamos `justify-between` —
          * ele empurraria o menu para a direita; no Figma o vazio fica a
          * direita, com o menu logo apos o logo.
+         *
+         * `max-w-[1440px]` e a largura da prancheta do Figma. Sem ele, em
+         * telas maiores o cabecalho ficava colado na borda esquerda enquanto
+         * o conteudo da pagina seguia centralizado — num monitor de 2560px
+         * davam 693px de desalinhamento. Com o limite, cabecalho e conteudo
+         * deslizam juntos e a proporcao do wireframe se mantem.
          */
-        className="flex items-center gap-6 px-5 py-4 md:px-6 lg:gap-[147px] lg:px-7 lg:py-6"
+        className="mx-auto flex w-full max-w-[1440px] items-center gap-6 px-5 py-4 md:px-6 lg:gap-[147px] lg:px-7 lg:py-6"
       >
         {/* O tamanho do wireframe (205px) so vale no desktop — no celular
             ocuparia mais da metade da largura da tela. */}
@@ -194,7 +200,7 @@ export function HeaderNav({ logo, brands, languages }: Props) {
 
       {/* Menu — mobile */}
       {mobileOpen && (
-        <div className="max-h-[calc(100dvh-5rem)] overflow-y-auto border-t border-neutral-200 px-5 pb-6 md:hidden">
+        <div className="mx-auto max-h-[calc(100dvh-5rem)] w-full max-w-[1440px] overflow-y-auto border-t border-neutral-200 px-5 pb-6 md:hidden">
           <ul className="flex flex-col">
             <li>
               <Link href="/" className={linkMobile}>

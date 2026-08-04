@@ -28,17 +28,27 @@ export function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
 
   return (
     <section aria-label="Destaques" className="relative overflow-hidden py-6">
+      {/*
+        A largura do slide e `min(81vw, 1172px)`.
+        Ate 1440px vale o 81vw do wireframe (1166px, dando um card de ~1142px).
+        Acima disso o teto entra: sem ele, num monitor de 2560px o slide ia a
+        2050px e as imagens de origem (1440px de largura) apareciam ampliadas.
+        O calculo do deslocamento usa a mesma variavel para nao sair do lugar.
+      */}
       <div
         className="flex transition-transform duration-700 ease-out"
-        /* 81vw menos os 24px de padding da o card de ~1148px a 1440px,
-           que e a largura medida no wireframe. */
-        style={{ transform: `translateX(calc(50% - ${index * 81}vw - 40.5vw))` }}
+        style={
+          {
+            "--slide": "min(81vw, 1172px)",
+            transform: `translateX(calc(50% - ${index} * var(--slide) - var(--slide) / 2))`,
+          } as React.CSSProperties
+        }
       >
         {slides.map((slide, i) => (
           <div
             key={i}
             aria-hidden={i !== index}
-            className="w-[81vw] shrink-0 px-3"
+            className="w-[var(--slide)] shrink-0 px-3"
           >
             <div
               className={`relative aspect-[16/7] overflow-hidden rounded-[2rem] transition-opacity duration-500 ${
