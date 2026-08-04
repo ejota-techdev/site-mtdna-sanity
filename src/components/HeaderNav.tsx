@@ -51,27 +51,24 @@ export function HeaderNav({ logo, brands, languages }: Props) {
   }, [openMenu]);
 
   const linkClass = "text-brand-navy transition-colors hover:text-brand-teal";
-  /* No menu mobile os itens viram blocos altos o bastante para o dedo. */
   const linkMobile = `${linkClass} flex min-h-11 items-center`;
 
   return (
-    <header className="sticky top-0 z-50 bg-white shadow-sm">
+    <header className="sticky top-0 z-50 bg-white shadow-sm w-full">
       <nav
         ref={navRef}
         aria-label="Principal"
         /*
-         * Medidas do wireframe (1440px): logo de x=28 a x=233 (205px de
-         * largura), menu comecando em x=380. Nao usamos `justify-between` —
-         * ele empurraria o menu para a direita; no Figma o vazio fica a
-         * direita, com o menu logo apos o logo.
+         * Corrigido: Removido o 'container-mtdna'.
+         * Devolvemos os paddings laterais (px-5, md:px-6, lg:px-7) originais 
+         * para que o menu estique 100% da tela e alinhe com o carrossel.
          */
-        className="flex items-center gap-6 px-5 py-4 md:px-6 lg:gap-[147px] lg:px-7 lg:py-6"
+        className="flex items-center w-full gap-6 px-5 py-4 md:px-6 lg:gap-[147px] lg:px-7 lg:py-6"
       >
-        {/* O tamanho do wireframe (205px) so vale no desktop — no celular
-            ocuparia mais da metade da largura da tela. */}
+        {/* A logo continua em 'rem' para preservar o zoom maravilhoso de 120% */}
         <Link
           href="/"
-          className="relative block h-16 w-[126px] shrink-0 lg:h-[104px] lg:w-[205px]"
+          className="relative block h-16 w-[7.875rem] shrink-0 lg:h-[6.5rem] lg:w-[12.8125rem]"
         >
           {logo ? (
             <SanityImage
@@ -86,10 +83,7 @@ export function HeaderNav({ logo, brands, languages }: Props) {
           )}
         </Link>
 
-        {/*
-          Menu — desktop. Gap calibrado para o conjunto ocupar de x=380 a
-          x=1014 a 1440px de largura, como no wireframe.
-        */}
+        {/* Menu — desktop */}
         <ul className="hidden items-center gap-8 md:flex lg:gap-20">
           <li>
             <Link href="/" className={linkClass}>
@@ -163,8 +157,6 @@ export function HeaderNav({ logo, brands, languages }: Props) {
         </ul>
 
         {/* Botao do menu — mobile */}
-        {/* 44x44 e o alvo minimo recomendado para toque (WCAG 2.5.5).
-            A margem negativa mantem o alinhamento visual com a borda. */}
         <button
           type="button"
           className="text-brand-navy -mr-2.5 ml-auto flex h-11 w-11 items-center justify-center md:hidden"
