@@ -112,7 +112,7 @@ export default async function Home() {
                 <div className="bg-brand-teal corner-br-flat p-8">
                   <p className="mb-5 flex items-center gap-3 text-lg font-bold text-white">
                     <Image
-                      src="/icons/whatsapp.svg"
+                      src="/icons/whatsapp2.svg"
                       alt=""
                       width={26}
                       height={26}
