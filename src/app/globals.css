@@ -31,12 +31,16 @@
  */
 @utility container-mtdna {
   margin-inline: auto;
-  /* 
-   * Aumentado para 90rem! 
-   * Junto com o zoom de 120%, isso garante que o layout preencha bem
-   * monitores largos e acabe com o excesso de margens brancas.
+  /*
+   * 71.875rem = 1150px com a fonte padrao de 16px. Menos os 24px de padding
+   * de cada lado, sobram os 1102px de conteudo medidos no Figma.
+   *
+   * NAO aumentar isto para "preencher" telas grandes: e assim que o design
+   * foi feito, e e assim que praticamente todo site funciona — conteudo
+   * centralizado com largura fixa, espaco vazio nas laterais em monitores
+   * largos. Ver nota em `html` sobre o motivo do espaco parecer "demais".
    */
-  max-width: 90rem;
+  max-width: 71.875rem;
   padding-inline: 1.5rem;
 }
 
@@ -57,11 +61,28 @@
 
 html {
   scroll-behavior: smooth;
-  /* 
-   * Trava o site inteiro nativamente no zoom de 120%.
-   * Textos, botões e imagens do Tailwind usarão essa nova escala base.
+  /*
+   * Sem `font-size` aqui, de proposito — segunda vez que isto e removido
+   * deste arquivo. NAO reintroduzir um valor fixo (ex.: 120%).
+   *
+   * O motivo do site "parecer pequeno" em monitor grande nao e a fonte: e
+   * que o conteudo tem largura maxima (ver `container-mtdna` acima) e fica
+   * centralizado, com espaco vazio nas laterais. Isso e intencional — o
+   * mesmo comportamento de Wikipedia, Amazon, Netflix etc., e bate com o
+   * Figma, que foi desenhado para 1102px de conteudo.
+   *
+   * Um `font-size: 120%` multiplica CADA rem do site por 1.2, incluindo em
+   * quem ja via certo. Ele nao resolve a causa: monitores diferentes tem
+   * escala do sistema operacional diferente (Windows em 125% entrega menos
+   * pixels CSS que em 100%, mesmo tela igual) — isso continua acontecendo
+   * com qualquer font-size fixo, so que agora tudo fica 20% maior para
+   * todo mundo.
+   *
+   * Se um dia fizer sentido o conteudo ocupar mais espaco em telas muito
+   * largas, o jeito correto e um segundo nivel de container maior SO para
+   * quem tiver monitor grande (breakpoint `2xl:` do Tailwind), nao mexer
+   * na fonte base nem no container principal.
    */
-  font-size: 120%; 
 }
 
 body {

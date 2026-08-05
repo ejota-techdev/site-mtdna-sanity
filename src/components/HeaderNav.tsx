@@ -59,12 +59,25 @@ export function HeaderNav({ logo, brands, languages }: Props) {
         ref={navRef}
         aria-label="Principal"
         /*
-         * Ajuste Final: Trocamos o espaçamento curto pelo exato vão do Figma!
-         * 147px convertidos para rem dão 9.1875rem.
-         * Isso empurra o menu para o local exato planejado no design original,
-         * escalando perfeitamente junto com o zoom de 120% do site.
+         * O cabecalho NAO usa `container-mtdna` de proposito.
+         *
+         * No Figma o header e quase largura total (logo a so 28px da borda,
+         * em 1440px de tela) enquanto as secoes de conteudo abaixo usam um
+         * container bem mais estreito e centralizado (1102px). Sao duas
+         * larguras diferentes por escolha do design — nao um erro a
+         * uniformizar. Usar `container-mtdna` aqui empurrava o logo para
+         * x=161 em vez de x=28, errado mesmo a 1440px, a largura "de
+         * referencia".
+         *
+         * `max-w-[90rem]` (1440px) mantem essa proporcao mais larga; em
+         * telas maiores o header centraliza dentro desse limite, com uma
+         * margem menor que a das secoes de conteudo — igual ao Figma.
+         *
+         * 9.1875rem = 147px com a fonte padrao (16px) — a distancia exata
+         * entre o fim do logo (x=233) e o inicio do menu (x=380) no Figma.
+         * Em rem para acompanhar quem aumenta a fonte do navegador.
          */
-        className="container-mtdna flex items-center gap-6 py-4 lg:gap-[9.1875rem] lg:py-6"
+        className="mx-auto flex w-full max-w-[90rem] items-center gap-6 px-5 py-4 md:px-6 lg:gap-[9.1875rem] lg:px-7 lg:py-6"
       >
         <Link
           href="/"
