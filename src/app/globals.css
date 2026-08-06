@@ -3,50 +3,37 @@
 /*
  * Design tokens — MTDNA
  * Extraídos do arquivo Figma "My Travel DNA - Wireframes"
- * (paleta confirmada por leitura de pixel nos swatches do style tile).
  */
 @theme {
-  /* Paleta da marca */
   --color-brand-yellow: #f4c70b;
   --color-brand-navy: #002132;
   --color-brand-teal: #10485b;
   --color-brand-coral: #ff8877;
   --color-brand-cream: #f7ede5;
-
-  /* Variação clara do coral, usada em estados de botão no wireframe */
   --color-brand-coral-soft: #fda093;
 
-  /* Tipografia — Roboto, confirmada no style tile do Figma.
-     Auto-hospedada em /public/fonts e injetada por next/font/local. */
   --font-sans: var(--font-roboto), ui-sans-serif, system-ui, sans-serif;
 
-  /* Raio dos "cantos assimétricos": o padrão recorrente do layout é
-     3 cantos arredondados + 1 reto. Ver utilitários abaixo. */
   --radius-card: 2rem;
   --radius-pill: 9999px;
 }
 
 /*
- * Container do conteúdo.
+ * Container do conteúdo (O Segredo da Padronização)
  */
 @utility container-mtdna {
   margin-inline: auto;
-  /*
-   * 71.875rem = 1150px com a fonte padrao de 16px. Menos os 24px de padding
-   * de cada lado, sobram os 1102px de conteudo medidos no Figma.
-   *
-   * NAO aumentar isto para "preencher" telas grandes: e assim que o design
-   * foi feito, e e assim que praticamente todo site funciona — conteudo
-   * centralizado com largura fixa, espaco vazio nas laterais em monitores
-   * largos. Ver nota em `html` sobre o motivo do espaco parecer "demais".
+  width: 100%;
+  
+  /* 
+   * Trava a largura máxima exata do Figma (1440px). 
+   * Isso garante que o Header e as seções não fiquem esticados ou
+   * encolhidos, não importa o tamanho do monitor do usuário.
    */
-  max-width: 71.875rem;
+  max-width: 1440px; 
   padding-inline: 1.5rem;
 }
 
-/*
- * Utilitários para o padrão de canto assimétrico
- */
 @utility corner-br-flat {
   border-radius: var(--radius-card) var(--radius-card) 0 var(--radius-card);
 }
@@ -61,28 +48,13 @@
 
 html {
   scroll-behavior: smooth;
-  /*
-   * Sem `font-size` aqui, de proposito — segunda vez que isto e removido
-   * deste arquivo. NAO reintroduzir um valor fixo (ex.: 120%).
-   *
-   * O motivo do site "parecer pequeno" em monitor grande nao e a fonte: e
-   * que o conteudo tem largura maxima (ver `container-mtdna` acima) e fica
-   * centralizado, com espaco vazio nas laterais. Isso e intencional — o
-   * mesmo comportamento de Wikipedia, Amazon, Netflix etc., e bate com o
-   * Figma, que foi desenhado para 1102px de conteudo.
-   *
-   * Um `font-size: 120%` multiplica CADA rem do site por 1.2, incluindo em
-   * quem ja via certo. Ele nao resolve a causa: monitores diferentes tem
-   * escala do sistema operacional diferente (Windows em 125% entrega menos
-   * pixels CSS que em 100%, mesmo tela igual) — isso continua acontecendo
-   * com qualquer font-size fixo, so que agora tudo fica 20% maior para
-   * todo mundo.
-   *
-   * Se um dia fizer sentido o conteudo ocupar mais espaco em telas muito
-   * largas, o jeito correto e um segundo nivel de container maior SO para
-   * quem tiver monitor grande (breakpoint `2xl:` do Tailwind), nao mexer
-   * na fonte base nem no container principal.
+  /* 
+   * Trava o zoom raiz em exatos 19.2px (que é 120% de 16px).
+   * Isso IMPEDE que a escala do Windows/Mac (125%, 150%) quebre o layout
+   * e deixe tudo gigante nos outros computadores. 
+   * Todo mundo verá o site na mesma proporção!
    */
+  font-size: 19.2px; 
 }
 
 body {
