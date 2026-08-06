@@ -1,9 +1,5 @@
 @import "tailwindcss";
 
-/*
- * Design tokens — MTDNA
- * Extraídos do arquivo Figma "My Travel DNA - Wireframes"
- */
 @theme {
   --color-brand-yellow: #f4c70b;
   --color-brand-navy: #002132;
@@ -19,18 +15,18 @@
 }
 
 /*
- * Container do conteúdo (O Segredo da Padronização)
+ * Container padronizado para "120% de zoom"
  */
 @utility container-mtdna {
   margin-inline: auto;
   width: 100%;
   
   /* 
-   * Trava a largura máxima exata do Figma (1440px). 
-   * Isso garante que o Header e as seções não fiquem esticados ou
-   * encolhidos, não importa o tamanho do monitor do usuário.
+   * 90rem x 19.2px = 1728px físicos.
+   * Isso equivale exatemente a um contêiner de 1440px recebendo 
+   * 120% de zoom no navegador.
    */
-  max-width: 1440px; 
+  max-width: 90rem; 
   padding-inline: 1.5rem;
 }
 
@@ -49,10 +45,9 @@
 html {
   scroll-behavior: smooth;
   /* 
-   * Trava o zoom raiz em exatos 19.2px (que é 120% de 16px).
-   * Isso IMPEDE que a escala do Windows/Mac (125%, 150%) quebre o layout
-   * e deixe tudo gigante nos outros computadores. 
-   * Todo mundo verá o site na mesma proporção!
+   * Trava a escala base em 120% nativamente.
+   * Todos os espaçamentos, fontes e margens do Tailwind (que usam rem)
+   * ficarão 20% maiores, imunes à quebra de escala do Linux ou Windows.
    */
   font-size: 19.2px; 
 }
