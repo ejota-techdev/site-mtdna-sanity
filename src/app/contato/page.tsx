@@ -51,19 +51,25 @@ export default async function ContatoPage() {
 
         {/* ---------- Formulário + informações ---------- */}
         <section className="container-mtdna py-16">
-          <h2 className="text-brand-teal mb-12 text-3xl font-bold">
-            {page?.formTitle ?? "Decole seu negócio com a gente!"}
-          </h2>
-
+          
           <div className="grid gap-14 md:grid-cols-2">
+            
+            {/* COLUNA DA ESQUERDA: Título + Formulário */}
             <div className="mx-auto w-full max-w-lg">
+              {/* O título foi movido para cá, dentro da coluna! */}
+              <h2 className="text-brand-teal mb-12 text-3xl font-bold">
+                {page?.formTitle ?? "Decole seu negócio com a gente!"}
+              </h2>
+              
               <ContactForm
                 variant="light"
                 successMessage={page?.successMessage}
               />
             </div>
 
+            {/* COLUNA DA DIREITA: Informações de contato */}
             <div className="flex flex-col gap-10">
+              {/* Agora esse componente vai subir e alinhar com o h2 da esquerda */}
               <ContactInfo settings={settings} title={page?.infoTitle} />
 
               {settings?.whatsappUrl && (
@@ -89,6 +95,7 @@ export default async function ContatoPage() {
                 </div>
               )}
             </div>
+            
           </div>
         </section>
       </main>

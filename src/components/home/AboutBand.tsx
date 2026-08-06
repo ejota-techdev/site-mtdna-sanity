@@ -24,11 +24,13 @@ export function AboutBand({
         <DecorGrid
           stroke="#F4C70B"
           strokeWidth={3}
+          rounded={["tr", "bl"]}
           className="pointer-events-none absolute top-1/2 right-full mr-12 hidden h-[calc(100%+4rem)] w-[500px] -translate-y-1/2 lg:block"
         />
         <DecorGrid
           stroke="#F4C70B"
           strokeWidth={3}
+          rounded={["tl", "br"]}
           className="pointer-events-none absolute top-1/2 left-full ml-12 hidden h-[calc(100%+4rem)] w-[500px] -translate-y-1/2 scale-x-[-1] lg:block"
         />
         <div className="flex flex-col gap-6 text-left">
