@@ -169,8 +169,13 @@ export default async function BrandPage({ params }: Props) {
 
         {/* ---------- Benefícios ---------- */}
         {brand.benefits?.length ? (
-          <section className="grid items-stretch md:grid-cols-2">
-            <div className="bg-brand-teal corner-br-flat flex flex-col justify-center gap-6 px-8 py-14 md:px-16">
+          <section className="grid items-stretch overflow-hidden md:grid-cols-3">
+            
+            {/* 
+              Removi a classe 'corner-br-flat' 
+              Adicionei: rounded-tr-[40px] (Superior Direita) e rounded-br-[40px] (Inferior Direita)
+            */}
+            <div className="bg-brand-teal rounded-br-[40px] flex flex-col justify-center gap-6 px-8 py-14 md:col-span-2 md:px-16">
               <h2 className="text-2xl font-bold text-white">
                 {brand.benefitsTitle ?? "Benefícios para você e seu cliente"}
               </h2>
@@ -184,8 +189,12 @@ export default async function BrandPage({ params }: Props) {
               </ul>
             </div>
 
-            <div className="hidden items-center justify-center p-10 md:flex">
-              <DecorGrid stroke="#10485B" className="h-[280px] w-[320px]" />
+            <div className="hidden items-center justify-end pl-8 pr-0 md:col-span-1 md:flex">
+              <DecorGrid 
+                stroke="#10485B" 
+                className="h-auto w-full max-w-[474px]" 
+                rounded={["bl"]} 
+              />
             </div>
           </section>
         ) : null}
