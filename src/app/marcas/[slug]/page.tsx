@@ -35,6 +35,16 @@ export default async function BrandPage({ params }: Props) {
 
   if (!brand) notFound();
 
+  // 🎨 BORDAS INDIVIDUAIS COM TRAÇO MAIS GROSSO (border-[3px]):
+  const bordaDosQuadrados = [
+    "border-[3px] rounded-tl-[30px]",       // 1º Quadrado
+    "border-[3px] rounded-none",           // 2º Quadrado
+    "border-[3px] rounded-tr-[30px]",      // 3º Quadrado
+    "border-[3px] rounded-bl-[30px]",      // 4º Quadrado
+    "border-[3px] rounded-none",           // 5º Quadrado
+    "border-[3px] rounded-br-[30px]",      // 6º Quadrado
+  ];
+
   return (
     <>
       <Header />
@@ -155,10 +165,10 @@ export default async function BrandPage({ params }: Props) {
         {brand.highlights?.length ? (
           <section className="container-mtdna pb-16">
             <ul className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
-              {brand.highlights.map((item) => (
+              {brand.highlights.map((item, index) => (
                 <li
                   key={item}
-                  className="border-brand-coral text-brand-navy flex items-center justify-center rounded-xl border px-5 py-6 text-center text-sm font-bold"
+                  className={`border-brand-coral text-brand-navy flex items-center justify-center px-5 py-6 text-center text-sm font-bold ${bordaDosQuadrados[index] || "border-[3px] rounded-[20px]"}`}
                 >
                   {item}
                 </li>
@@ -169,13 +179,8 @@ export default async function BrandPage({ params }: Props) {
 
         {/* ---------- Benefícios ---------- */}
         {brand.benefits?.length ? (
-          <section className="grid items-stretch overflow-hidden md:grid-cols-3">
-            
-            {/* 
-              Removi a classe 'corner-br-flat' 
-              Adicionei: rounded-tr-[40px] (Superior Direita) e rounded-br-[40px] (Inferior Direita)
-            */}
-            <div className="bg-brand-teal rounded-br-[40px] flex flex-col justify-center gap-6 px-8 py-14 md:col-span-2 md:px-16">
+          <section className="mb-16 grid items-stretch overflow-hidden md:grid-cols-3">
+            <div className="bg-brand-teal rounded-tr-[40px] rounded-br-[40px] flex flex-col justify-center gap-6 px-8 py-14 md:col-span-2 md:px-16">
               <h2 className="text-2xl font-bold text-white">
                 {brand.benefitsTitle ?? "Benefícios para você e seu cliente"}
               </h2>
