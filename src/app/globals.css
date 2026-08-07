@@ -12,6 +12,18 @@
 
   --radius-card: 2rem;
   --radius-pill: 9999px;
+
+  /*
+   * Raio do canto único dos BLOCOS (3 arestas a 90° + 1 arredondada).
+   * Medido em pixel no wireframe "Marcas - Europcar" a 1440px:
+   *   bloco azul de benefícios .... 57px
+   *   imagem do destaque .......... 88px
+   * Em `vw` e não em `rem` de propósito: o raio acompanha a largura da tela,
+   * não a escala da fonte (ver `font-size` em `html` mais abaixo). O `clamp`
+   * evita que 88px comam um terço da altura do card no celular.
+   */
+  --radius-block: clamp(2rem, 4vw, 3.5rem);
+  --radius-block-lg: clamp(2.5rem, 6vw, 5.5rem);
 }
 
 /*
@@ -40,6 +52,26 @@
 
 @utility corner-tr-flat {
   border-radius: var(--radius-card) 0 var(--radius-card) var(--radius-card);
+}
+
+/*
+ * ATENÇÃO — são DOIS padrões diferentes, um o inverso do outro:
+ *
+ *   corner-*-flat   3 cantos arredondados + 1 reto  (cards menores)
+ *   corner-round-*  3 arestas a 90° + 1 arredondada (imagens e blocos)
+ *
+ * O segundo é o que o cliente descreve como "3 arestas 90 graus e uma
+ * arredondada" e o que aparece no wireframe na imagem de destaque das
+ * páginas de marca. Os nomes são parecidos e o resultado é oposto: ao mexer,
+ * conferir no wireframe qual dos dois a peça usa.
+ */
+@utility corner-round-br {
+  border-radius: 0 0 var(--radius-block) 0;
+}
+
+/* Mesma forma, raio maior — usado nas imagens grandes. */
+@utility corner-round-br-lg {
+  border-radius: 0 0 var(--radius-block-lg) 0;
 }
 
 html {

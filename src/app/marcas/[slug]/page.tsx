@@ -3,7 +3,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 
 import { BrandHero } from "@/components/BrandHero";
-import { DecorGrid } from "@/components/DecorGrid";
+import { ArrowRight, DecorGrid } from "@/components/DecorGrid";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { SanityImage } from "@/components/SanityImage";
@@ -139,7 +139,7 @@ export default async function BrandPage({ params }: Props) {
                   className="bg-brand-coral mt-2 inline-flex w-fit items-center gap-3 rounded-full px-7 py-3 text-sm font-medium text-white transition-opacity hover:opacity-90"
                 >
                   {brand.featureCta.label}
-                  <span aria-hidden="true">→</span>
+                  <ArrowRight className="h-[1.125rem] w-[1.125rem] shrink-0" />
                 </a>
               )}
 
@@ -150,7 +150,12 @@ export default async function BrandPage({ params }: Props) {
               )}
             </div>
 
-            <div className="corner-br-flat relative min-h-[320px] overflow-hidden">
+            {/*
+              3 arestas a 90° + o canto inferior direito arredondado, como no
+              wireframe. NAO trocar por `corner-br-flat`: aquele utilitario faz
+              o oposto (3 arredondados + 1 reto).
+            */}
+            <div className="corner-round-br-lg relative min-h-[320px] overflow-hidden">
               <SanityImage
                 image={brand.featureImage}
                 alt={brand.name}

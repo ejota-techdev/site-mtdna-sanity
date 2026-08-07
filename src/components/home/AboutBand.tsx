@@ -35,7 +35,8 @@ export function AboutBand({
         />
         <div className="flex flex-col gap-6 text-left">
           {text?.map((paragraph, i) => (
-            <p key={i} className="text-[25px] leading-relaxed text-white">
+            /* 25px -> 21px: a faixa azul estava alta demais na Home. */
+            <p key={i} className="text-[21px] leading-relaxed text-white">
               {paragraph}
             </p>
           ))}
