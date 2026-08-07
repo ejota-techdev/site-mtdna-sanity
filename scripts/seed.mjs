@@ -251,9 +251,6 @@ async function main() {
       logoLight: img(A.unlockLogoClaro, "Unlock Boutique Hotels"),
       heroImage: img(A.unlockHero, "Hotel boutique português visto do alto"),
       tagline: "Autenticidade e elegância em hotéis boutique portugueses",
-      introTitle: "Seu conceito e seus hotéis",
-      introText:
-        "Unlock Boutique Hotels oferece uma coleção de 22 hotéis em 18 destinos portugueses sendo uma referência em hospitalidade autêntica em Portugal. Seu conceito de hospedagem se diferencia por oferecer não apenas hotéis, mas experiências completas de vivenciar cada destino de maneira única, mergulhando naquilo que cada lugar tem de especial e de mais característico.",
       featureTitle: "Unlock your dreams",
       featureText:
         "O portfólio da Unlock é composto por hotéis independentes que compartilham a mesma filosofia: proporcionar conforto, personalidade e uma relação próxima com a cultura local. Localizados em destinos estratégicos de Portugal, os hotéis se destacam pela arquitetura, pelo atendimento personalizado e pela atenção aos detalhes que tornam cada estadia única.\n\nA Unlock atua como um elo entre viajantes e experiências genuínas, reunindo propriedades que preservam sua identidade própria, ao mesmo tempo em que entrega padrões de qualidade e experiência boutique.",

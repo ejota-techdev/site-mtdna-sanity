@@ -43,11 +43,12 @@
 }
 
 @utility corner-br-flat {
-  border-radius: var(--radius-card) var(--radius-card) 0 var(--radius-card);
+  border-radius: var(--radius-card) 0 var(--radius-card) 0;
 }
 
 @utility corner-bl-flat {
-  border-radius: var(--radius-card) var(--radius-card) var(--radius-card) 0;
+  border-radius: 0 var(--radius-card) 0 var(--radius-card);
+
 }
 
 @utility corner-tr-flat {
