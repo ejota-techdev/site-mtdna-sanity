@@ -72,6 +72,34 @@ export function DecorGrid({
   );
 }
 
+/**
+ * Seta dos botoes de acao das paginas de marca.
+ *
+ * Antes era o caractere "→" do texto, que herda o peso da fonte e sai fino
+ * demais e com pontas retas. O wireframe usa um vetor de traco mais grosso
+ * com quinas e pontas arredondadas — dai `strokeLinecap`/`strokeLinejoin`
+ * em "round" e `strokeWidth` 2.5.
+ */
+export function ArrowRight({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+      className={className}
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M4 12h15m0 0-6-6m6 6-6 6"
+        stroke="currentColor"
+        strokeWidth={2.5}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 /** Estrela de quatro pontas usada nos botoes e nos blocos expansiveis. */
 export function Star({ className }: { className?: string }) {
   return (

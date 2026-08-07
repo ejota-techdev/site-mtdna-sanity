@@ -11,9 +11,20 @@ type Status = "idle" | "sending" | "sent" | "error";
 export function ContactForm({
   successMessage = "Recebemos sua mensagem. Em breve entraremos em contato!",
   variant = "dark",
+  fill = false,
 }: {
   successMessage?: string;
   variant?: "dark" | "light";
+  /**
+   * Estica o formulario para ocupar toda a altura do container, deixando a
+   * caixa de mensagem absorver a sobra.
+   *
+   * Serve para a Home, onde o bloco do formulario divide a linha do grid com
+   * uma coluna mais alta: como item de grid ele estica junto, mas o conteudo
+   * parava na metade e sobrava um vazio embaixo. Exige que o pai seja
+   * `flex flex-col`.
+   */
+  fill?: boolean;
 }) {
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState("");
@@ -78,7 +89,10 @@ export function ContactForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+    <form
+      onSubmit={handleSubmit}
+      className={`flex flex-col gap-4 ${fill ? "flex-1" : ""}`}
+    >
       <label className="sr-only" htmlFor="contact-name">
         Seu nome
       </label>
@@ -125,7 +139,7 @@ export function ContactForm({
         rows={5}
         maxLength={4000}
         placeholder="Como podemos te ajudar?"
-        className={`${fieldClass} resize-y`}
+        className={`${fieldClass} resize-y ${fill ? "min-h-36 flex-1" : ""}`}
       />
 
       {error && (

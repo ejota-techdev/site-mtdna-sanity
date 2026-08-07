@@ -100,11 +100,11 @@ export default async function Home() {
           </h2>
 
           <div className="grid gap-10 md:grid-cols-2">
-            <div className="bg-brand-teal corner-br-flat p-8">
+            <div className="bg-brand-teal corner-br-flat flex flex-col p-8">
               <h3 className="mb-6 text-xl font-bold text-white">
                 {home?.contactFormTitle ?? "Decole seu negócio com a gente!"}
               </h3>
-              <ContactForm variant="dark" />
+              <ContactForm variant="dark" fill />
             </div>
 
             <div className="flex flex-col gap-10">
