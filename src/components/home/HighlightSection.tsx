@@ -1,15 +1,12 @@
 "use client";
 
-
 import { useState } from "react";
-
 
 import { SanityImage } from "@/components/SanityImage";
 import type {
   HighlightCard,
   SanityImage as SanityImageType,
 } from "@/sanity/lib/types";
-
 
 /*
  * Medidas tiradas dos wireframes 10, 11 e 12 (canvas de 1440px):
@@ -29,7 +26,6 @@ import type {
 /** Altura da foto — fixa, para nao acompanhar o card ao lado. */
 const ALTURA_FOTO = "md:h-[418px]";
 
-
 export function HighlightSection({
   image,
   cards,
@@ -39,9 +35,7 @@ export function HighlightSection({
 }) {
   const [aberto, setAberto] = useState<number | null>(null);
 
-
   if (!cards?.length) return null;
-
 
   return (
     <section className="container-mtdna grid gap-8 py-16 md:grid-cols-2 md:gap-[52px]">
@@ -56,7 +50,6 @@ export function HighlightSection({
         />
       </div>
 
-
       {/*
         A coluna nao tem altura travada: as pecas somam os 418px do wireframe
         quando o texto cabe, e crescem quando nao cabe. Travar a altura
@@ -68,11 +61,9 @@ export function HighlightSection({
         {cards.map((card, i) => {
           const estaAberto = aberto === i;
 
-
           // Enquanto um card esta aberto, ele ocupa a coluna inteira —
           // e como os wireframes 10 e 12 mostram o estado expandido.
           if (aberto !== null && !estaAberto) return null;
-
 
           return (
             <article
@@ -95,11 +86,9 @@ export function HighlightSection({
                 />
                 <span className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/10" />
 
-
                 <span className="absolute bottom-4 left-6 font-bold text-white">
                   {card.title}
                 </span>
-
 
                 <span
                   className={`text-brand-coral absolute top-4 right-6 text-3xl leading-none transition-transform ${
@@ -111,10 +100,9 @@ export function HighlightSection({
                 </span>
               </button>
 
-
               {/*min-h reproduz os 293px do wireframe; cresce se o texto pedir. */}
               {estaAberto && card.body && (
-                <div className="border-brand-teal min-h-[293px] rounded-br-[44px] border px-6 py-6">
+                <div className="border-brand-teal bg-white min-h-[293px] rounded-tr-none rounded-br-[44px] border -mt-[1px] px-6 py-6">
                   <p className="text-sm leading-relaxed whitespace-pre-line text-neutral-700">
                     {card.body}
                   </p>
@@ -127,6 +115,3 @@ export function HighlightSection({
     </section>
   );
 }
-
-
-
