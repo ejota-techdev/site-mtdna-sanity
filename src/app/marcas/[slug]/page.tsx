@@ -38,7 +38,6 @@ export default async function BrandPage({ params }: Props) {
   // 🎨 ARREDONDAMENTOS INDIVIDUAIS DINÂMICOS:
   let bordaDosQuadrados: string[] = [];
 
-  // Se a marca for a Goldcar, aplica o layout específico do Figma:
   if (slug === "goldcar") {
     bordaDosQuadrados = [
       "rounded-tl-[30px]",  // 1º Quadrado: Canto superior esquerdo
@@ -46,7 +45,6 @@ export default async function BrandPage({ params }: Props) {
       "rounded-tr-none rounded-br-[60px]",  // 3º Quadrado: Canto inferior direito
     ];
   } else {
-    // Se for qualquer outra marca, mantém o padrão antigo que você tinha:
     bordaDosQuadrados = [
       "rounded-tl-[30px]",       // 1º Quadrado
       "rounded-none",            // 2º Quadrado
@@ -72,99 +70,192 @@ export default async function BrandPage({ params }: Props) {
           tagline={brand.tagline}
         />
 
-        {/* ---------- Destaque em duas colunas (Imagem esq / Intro dir) ---------- */}
-        {(brand.introTitle || brand.introText || brand.featureImage) && (
-          <section className="container-mtdna py-12 md:py-16">
-            <div className="grid gap-10 items-center md:grid-cols-2 lg:gap-16">
-              
-              {/* Imagem com corte exclusivo no canto inferior direito */}
-              <div className="relative aspect-[4/3] w-full overflow-hidden rounded-br-[120px] md:aspect-video">
-                {brand.featureImage && (
-                  <SanityImage
-                    image={brand.featureImage}
-                    alt={brand.name}
-                    sizes="(min-width: 768px) 50vw, 100vw"
-                    className="object-cover w-full h-full"
-                  />
-                )}
-              </div>
+        {/* ====================================================================== */}
+        {/* BIFURCAÇÃO DE LAYOUT: UNLOCK vs OUTRAS MARCAS */}
+        {/* ====================================================================== */}
 
-              {/* Título e Texto lateral */}
-              <div className="flex flex-col gap-6">
-                {brand.introTitle && (
-                  <h2 className="text-brand-navy text-3xl font-bold leading-tight md:text-4xl">
-                    {brand.introTitle}
+        {slug === "unlock" ? (
+          /* ================= LAYOUT EXCLUSIVO DA UNLOCK ================= */
+          <>
+            {/* Bloco 1: Apenas o Mapa e o texto associado a ele (Sem a duplicação em cima) */}
+            <section className="container-mtdna py-12 md:py-16">
+              {brand.showLocationMap && (
+                <figure className="mx-auto max-w-3xl mb-10">
+                  <Image
+                    src="/decor/mapa-unlock.png"
+                    alt={`Mapa de Portugal com os destinos da ${brand.name}`}
+                    width={1068}
+                    height={1511}
+                    className="h-auto w-full"
+                    sizes="(min-width: 768px) 576px, 100vw"
+                    unoptimized
+                  />
+                  <figcaption className="sr-only">
+                    Destinos: {brand.locations?.join(", ")}.
+                  </figcaption>
+                </figure>
+              )}
+
+              {brand.locationsIntro && (
+                <div className="mb-8 max-w-4xl mx-auto text-center md:text-left">
+                  <p className="text-neutral-700 leading-relaxed text-sm md:text-base">
+                    {brand.locationsIntro}
+                  </p>
+                </div>
+              )}
+            </section>
+
+            {/* Bloco 2: Destaque, Botão e Imagem (Embaixo) */}
+            <section className="container-mtdna pb-16">
+              <div className="mb-10">
+                {brand.featureTitle && (
+                  <h2 className="text-brand-navy text-3xl font-bold mb-6">
+                    {brand.featureTitle}
                   </h2>
                 )}
-                {brand.introText && (
-                  <p className="text-neutral-700 whitespace-pre-line text-base leading-relaxed opacity-90 md:text-lg">
-                    {brand.introText}
+                {brand.featureText && (
+                  <p className="text-neutral-700 whitespace-pre-line text-base leading-relaxed opacity-90 md:text-lg max-w-5xl">
+                    {brand.featureText}
                   </p>
                 )}
               </div>
 
-            </div>
-          </section>
-        )}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-end">
+                {/* Lado Esquerdo: Botão e Nota */}
+                <div className="flex flex-col gap-6 order-2 md:order-1 pb-4">
+                  {brand.featureCta && (
+                    <div>
+                      <a
+                        href={brand.featureCta.href}
+                        target="_blank"
+                        rel="noreferrer noopener"
+                        className="bg-brand-coral inline-flex items-center gap-2 rounded-full px-8 py-4 font-semibold text-white transition-transform hover:scale-105 hover:opacity-90"
+                      >
+                        {brand.featureCta.label}
+                        <span aria-hidden="true">→</span>
+                      </a>
+                    </div>
+                  )}
+                  {brand.featureNote && (
+                    <p className="text-neutral-500 text-xs leading-relaxed max-w-sm mt-2">
+                      {brand.featureNote}
+                    </p>
+                  )}
+                </div>
 
-        {/* ---------- Textos Adicionais & CTA ---------- */}
-        {(brand.featureText || brand.featureCta) && (
-          <section className="container-mtdna pb-16">
-            <div className="mx-auto flex max-w-5xl flex-col gap-8 md:mx-0">
-              {brand.featureText && (
-                <p className="text-neutral-700 whitespace-pre-line text-base leading-relaxed opacity-90 md:text-lg">
-                  {brand.featureText}
-                </p>
-              )}
-              {brand.featureNote && (
-                <p className="text-neutral-500 text-xs leading-relaxed">
-                  {brand.featureNote}
-                </p>
-              )}
-            </div>
-
-            {/* CTA Centralizado */}
-            {brand.featureCta && (
-              <div className="mt-12 flex justify-center md:mt-16">
-                <a
-                  href={brand.featureCta.href}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  className="bg-brand-coral inline-flex items-center gap-2 rounded-full px-8 py-4 font-semibold text-white transition-transform hover:scale-105 hover:opacity-90"
-                >
-                  {brand.featureCta.label}
-                  <span aria-hidden="true">→</span>
-                </a>
+                {/* Lado Direito: Imagem com recorte no canto superior esquerdo */}
+                <div className="relative aspect-[4/3] w-full overflow-hidden rounded-tl-[100px] md:aspect-video order-1 md:order-2">
+                  {brand.featureImage && (
+                    <SanityImage
+                      image={brand.featureImage}
+                      alt={brand.name}
+                      sizes="(min-width: 768px) 50vw, 100vw"
+                      className="object-cover w-full h-full"
+                    />
+                  )}
+                </div>
               </div>
+            </section>
+          </>
+        ) : (
+          /* ================= LAYOUT PADRÃO (Goldcar, Europcar) ================= */
+          <>
+            {/* ---------- Destaque em duas colunas (Imagem esq / Intro dir) ---------- */}
+            {(brand.introTitle || brand.introText || brand.featureImage) && (
+              <section className="container-mtdna py-12 md:py-16">
+                <div className="grid gap-10 items-center md:grid-cols-2 lg:gap-16">
+                  
+                  <div className="relative aspect-[4/3] w-full overflow-hidden rounded-br-[120px] md:aspect-video">
+                    {brand.featureImage && (
+                      <SanityImage
+                        image={brand.featureImage}
+                        alt={brand.name}
+                        sizes="(min-width: 768px) 50vw, 100vw"
+                        className="object-cover w-full h-full"
+                      />
+                    )}
+                  </div>
+
+                  <div className="flex flex-col gap-6">
+                    {brand.introTitle && (
+                      <h2 className="text-brand-navy text-3xl font-bold leading-tight md:text-4xl">
+                        {brand.introTitle}
+                      </h2>
+                    )}
+                    {brand.introText && (
+                      <p className="text-neutral-700 whitespace-pre-line text-base leading-relaxed opacity-90 md:text-lg">
+                        {brand.introText}
+                      </p>
+                    )}
+                  </div>
+
+                </div>
+              </section>
             )}
-          </section>
+
+            {/* ---------- Textos Adicionais & CTA ---------- */}
+            {(brand.featureText || brand.featureCta) && (
+              <section className="container-mtdna pb-16">
+                <div className="mx-auto flex max-w-5xl flex-col gap-8 md:mx-0">
+                  {brand.featureText && (
+                    <p className="text-neutral-700 whitespace-pre-line text-base leading-relaxed opacity-90 md:text-lg">
+                      {brand.featureText}
+                    </p>
+                  )}
+                  {brand.featureNote && (
+                    <p className="text-neutral-500 text-xs leading-relaxed">
+                      {brand.featureNote}
+                    </p>
+                  )}
+                </div>
+
+                {brand.featureCta && (
+                  <div className="mt-12 flex justify-center md:mt-16">
+                    <a
+                      href={brand.featureCta.href}
+                      target="_blank"
+                      rel="noreferrer noopener"
+                      className="bg-brand-coral inline-flex items-center gap-2 rounded-full px-8 py-4 font-semibold text-white transition-transform hover:scale-105 hover:opacity-90"
+                    >
+                      {brand.featureCta.label}
+                      <span aria-hidden="true">→</span>
+                    </a>
+                  </div>
+                )}
+              </section>
+            )}
+
+            {/* ---------- Destinos (Mapa) ---------- */}
+            {brand.showLocationMap && brand.locations?.length ? (
+              <section className="container-mtdna pb-16">
+                <figure className="mx-auto max-w-xl">
+                  <Image
+                    src="/decor/mapa-unlock.png"
+                    alt={`Mapa de Portugal com os destinos da ${brand.name}`}
+                    width={1068}
+                    height={1511}
+                    className="h-auto w-full"
+                    sizes="(min-width: 768px) 576px, 100vw"
+                    unoptimized
+                  />
+                  <figcaption className="sr-only">
+                    Destinos: {brand.locations.join(", ")}.
+                  </figcaption>
+                </figure>
+
+                {brand.locationsIntro && (
+                  <p className="text-neutral-700 mt-10 leading-relaxed">
+                    {brand.locationsIntro}
+                  </p>
+                )}
+              </section>
+            ) : null}
+          </>
         )}
 
-        {/* ---------- Destinos (Unlock - Mapa) ---------- */}
-        {brand.showLocationMap && brand.locations?.length ? (
-          <section className="container-mtdna pb-16">
-            <figure className="mx-auto max-w-xl">
-              <Image
-                src="/decor/mapa-unlock.png"
-                alt={`Mapa de Portugal com os destinos da ${brand.name}`}
-                width={1068}
-                height={1511}
-                className="h-auto w-full"
-                sizes="(min-width: 768px) 576px, 100vw"
-                unoptimized
-              />
-              <figcaption className="sr-only">
-                Destinos: {brand.locations.join(", ")}.
-              </figcaption>
-            </figure>
-
-            {brand.locationsIntro && (
-              <p className="text-neutral-700 mt-10 leading-relaxed">
-                {brand.locationsIntro}
-              </p>
-            )}
-          </section>
-        ) : null}
+        {/* ====================================================================== */}
+        {/* BLOCOS COMUNS A TODAS AS MARCAS                                        */}
+        {/* ====================================================================== */}
 
         {/* ---------- Caixas de destaque ---------- */}
         {brand.highlights?.length ? (
@@ -173,7 +264,6 @@ export default async function BrandPage({ params }: Props) {
               {brand.highlights.map((item, index) => (
                 <li
                   key={item}
-                  /* 👇 A grossura global agora voltou para border-[3px] (mais grossa)! */
                   className={`border-brand-coral border-[4px] text-brand-navy flex min-h-[140px] items-center justify-center px-5 py-6 text-center text-sm font-bold md:text-base leading-snug ${bordaDosQuadrados[index] || "rounded-[20px]"}`}
                 >
                   {item}
