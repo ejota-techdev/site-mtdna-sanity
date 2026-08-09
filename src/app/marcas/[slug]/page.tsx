@@ -35,26 +35,34 @@ export default async function BrandPage({ params }: Props) {
 
   if (!brand) notFound();
 
-  // 🎨 BORDAS INDIVIDUAIS COM TRAÇO MAIS GROSSO (border-[3px]):
-  const bordaDosQuadrados = [
-    "border-[3px] rounded-tl-[30px]",       // 1º Quadrado
-    "border-[3px] rounded-none",           // 2º Quadrado
-    "border-[3px] rounded-tr-[30px]",      // 3º Quadrado
-    "border-[3px] rounded-bl-[30px]",      // 4º Quadrado
-    "border-[3px] rounded-none",           // 5º Quadrado
-    "border-[3px] rounded-br-[30px]",      // 6º Quadrado
-  ];
+  // 🎨 ARREDONDAMENTOS INDIVIDUAIS DINÂMICOS:
+  let bordaDosQuadrados: string[] = [];
+
+  // Se a marca for a Goldcar, aplica o layout específico do Figma:
+  if (slug === "goldcar") {
+    bordaDosQuadrados = [
+      "rounded-tl-[30px]",  // 1º Quadrado: Canto superior esquerdo
+      "rounded-none",       // 2º Quadrado: Reto
+      "rounded-tr-none rounded-br-[60px]",  // 3º Quadrado: Canto inferior direito
+    ];
+  } else {
+    // Se for qualquer outra marca, mantém o padrão antigo que você tinha:
+    bordaDosQuadrados = [
+      "rounded-tl-[30px]",       // 1º Quadrado
+      "rounded-none",            // 2º Quadrado
+      "rounded-tr-[30px]",       // 3º Quadrado
+      "rounded-bl-[30px]",       // 4º Quadrado
+      "rounded-none",            // 5º Quadrado
+      "rounded-br-[30px]",       // 6º Quadrado
+    ];
+  }
 
   return (
     <>
       <Header />
 
       <main>
-        {/*
-          ---------- Topo ----------
-          A imagem principal e sempre o primeiro slide; as do carrossel vem
-          depois. Com uma imagem so, o componente renderiza estatico.
-        */}
+        {/* ---------- Topo ---------- */}
         <BrandHero
           images={[brand.heroImage, ...(brand.gallery ?? [])].filter(
             (img): img is NonNullable<typeof img> => Boolean(img?.asset),
@@ -64,27 +72,75 @@ export default async function BrandPage({ params }: Props) {
           tagline={brand.tagline}
         />
 
-        {/* ---------- Abertura ---------- */}
-        {(brand.introTitle || brand.introText) && (
-          <section className="container-mtdna py-16">
-            {brand.introTitle && (
-              <h1 className="text-brand-navy mb-5 text-2xl leading-snug font-bold md:text-3xl">
-                {brand.introTitle}
-              </h1>
-            )}
-            {brand.introText && (
-              <p className="leading-relaxed whitespace-pre-line text-neutral-700">
-                {brand.introText}
-              </p>
+        {/* ---------- Destaque em duas colunas (Imagem esq / Intro dir) ---------- */}
+        {(brand.introTitle || brand.introText || brand.featureImage) && (
+          <section className="container-mtdna py-12 md:py-16">
+            <div className="grid gap-10 items-center md:grid-cols-2 lg:gap-16">
+              
+              {/* Imagem com corte exclusivo no canto inferior direito */}
+              <div className="relative aspect-[4/3] w-full overflow-hidden rounded-br-[120px] md:aspect-video">
+                {brand.featureImage && (
+                  <SanityImage
+                    image={brand.featureImage}
+                    alt={brand.name}
+                    sizes="(min-width: 768px) 50vw, 100vw"
+                    className="object-cover w-full h-full"
+                  />
+                )}
+              </div>
+
+              {/* Título e Texto lateral */}
+              <div className="flex flex-col gap-6">
+                {brand.introTitle && (
+                  <h2 className="text-brand-navy text-3xl font-bold leading-tight md:text-4xl">
+                    {brand.introTitle}
+                  </h2>
+                )}
+                {brand.introText && (
+                  <p className="text-neutral-700 whitespace-pre-line text-base leading-relaxed opacity-90 md:text-lg">
+                    {brand.introText}
+                  </p>
+                )}
+              </div>
+
+            </div>
+          </section>
+        )}
+
+        {/* ---------- Textos Adicionais & CTA ---------- */}
+        {(brand.featureText || brand.featureCta) && (
+          <section className="container-mtdna pb-16">
+            <div className="mx-auto flex max-w-5xl flex-col gap-8 md:mx-0">
+              {brand.featureText && (
+                <p className="text-neutral-700 whitespace-pre-line text-base leading-relaxed opacity-90 md:text-lg">
+                  {brand.featureText}
+                </p>
+              )}
+              {brand.featureNote && (
+                <p className="text-neutral-500 text-xs leading-relaxed">
+                  {brand.featureNote}
+                </p>
+              )}
+            </div>
+
+            {/* CTA Centralizado */}
+            {brand.featureCta && (
+              <div className="mt-12 flex justify-center md:mt-16">
+                <a
+                  href={brand.featureCta.href}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="bg-brand-coral inline-flex items-center gap-2 rounded-full px-8 py-4 font-semibold text-white transition-transform hover:scale-105 hover:opacity-90"
+                >
+                  {brand.featureCta.label}
+                  <span aria-hidden="true">→</span>
+                </a>
+              </div>
             )}
           </section>
         )}
 
-        {/*
-          ---------- Destinos (Unlock) ----------
-          No wireframe o mapa vem logo apos a abertura, antes do bloco
-          "Unlock your dreams".
-        */}
+        {/* ---------- Destinos (Unlock - Mapa) ---------- */}
         {brand.showLocationMap && brand.locations?.length ? (
           <section className="container-mtdna pb-16">
             <figure className="mx-auto max-w-xl">
@@ -97,69 +153,18 @@ export default async function BrandPage({ params }: Props) {
                 sizes="(min-width: 768px) 576px, 100vw"
                 unoptimized
               />
-
-              {/*
-                Os nomes das localidades estao gravados na imagem, entao
-                leitor de tela nao os alcanca. A lista abaixo repoe isso —
-                invisivel na tela, disponivel para tecnologia assistiva.
-              */}
               <figcaption className="sr-only">
                 Destinos: {brand.locations.join(", ")}.
               </figcaption>
             </figure>
 
             {brand.locationsIntro && (
-              <p className="mt-10 leading-relaxed text-neutral-700">
+              <p className="text-neutral-700 mt-10 leading-relaxed">
                 {brand.locationsIntro}
               </p>
             )}
           </section>
         ) : null}
-
-        {/* ---------- Destaque em duas colunas ---------- */}
-        {(brand.featureTitle || brand.featureImage) && (
-          <section className="container-mtdna grid items-center gap-10 pb-16 md:grid-cols-2">
-            <div className="flex flex-col gap-5">
-              {brand.featureTitle && (
-                <h2 className="text-brand-navy text-2xl leading-snug font-bold">
-                  {brand.featureTitle}
-                </h2>
-              )}
-              {brand.featureText && (
-                <p className="text-sm leading-relaxed whitespace-pre-line text-neutral-700">
-                  {brand.featureText}
-                </p>
-              )}
-
-              {brand.featureCta && (
-                <a
-                  href={brand.featureCta.href}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  className="bg-brand-coral mt-2 inline-flex w-fit items-center gap-3 rounded-full px-7 py-3 text-sm font-medium text-white transition-opacity hover:opacity-90"
-                >
-                  {brand.featureCta.label}
-                  <span aria-hidden="true">→</span>
-                </a>
-              )}
-
-              {brand.featureNote && (
-                <p className="text-xs leading-relaxed text-neutral-500">
-                  {brand.featureNote}
-                </p>
-              )}
-            </div>
-
-            <div className="corner-br-flat relative min-h-[320px] overflow-hidden">
-              <SanityImage
-                image={brand.featureImage}
-                alt={brand.name}
-                sizes="(min-width: 768px) 50vw, 100vw"
-                className="object-cover"
-              />
-            </div>
-          </section>
-        )}
 
         {/* ---------- Caixas de destaque ---------- */}
         {brand.highlights?.length ? (
@@ -168,7 +173,8 @@ export default async function BrandPage({ params }: Props) {
               {brand.highlights.map((item, index) => (
                 <li
                   key={item}
-                  className={`border-brand-coral text-brand-navy flex items-center justify-center px-5 py-6 text-center text-sm font-bold ${bordaDosQuadrados[index] || "border-[3px] rounded-[20px]"}`}
+                  /* 👇 A grossura global agora voltou para border-[3px] (mais grossa)! */
+                  className={`border-brand-coral border-[4px] text-brand-navy flex min-h-[140px] items-center justify-center px-5 py-6 text-center text-sm font-bold md:text-base leading-snug ${bordaDosQuadrados[index] || "rounded-[20px]"}`}
                 >
                   {item}
                 </li>
@@ -180,7 +186,7 @@ export default async function BrandPage({ params }: Props) {
         {/* ---------- Benefícios ---------- */}
         {brand.benefits?.length ? (
           <section className="mb-16 grid items-stretch overflow-hidden md:grid-cols-3">
-            <div className="bg-brand-teal rounded-tr-[40px] rounded-br-[40px] flex flex-col justify-center gap-6 px-8 py-14 md:col-span-2 md:px-16">
+            <div className="bg-brand-teal flex flex-col justify-center gap-6 rounded-tr-[40px] rounded-br-[40px] px-8 py-14 md:col-span-2 md:px-16">
               <h2 className="text-2xl font-bold text-white">
                 {brand.benefitsTitle ?? "Benefícios para você e seu cliente"}
               </h2>
