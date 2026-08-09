@@ -100,12 +100,12 @@ export function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
 
                 <div className="absolute right-5 bottom-5 left-5 flex flex-col gap-2 sm:right-8 sm:bottom-8 sm:left-8 sm:gap-4">
-                  {slide.brand?.logoLight ?? slide.brand?.logo ? (
-                    <div className="relative h-8 w-32 sm:h-12 sm:w-48">
+                  {(slide.brand?.logoLight ?? slide.brand?.logo) ? (
+                    <div className="relative h-12 w-48 sm:h-16 sm:w-64">
                       <SanityImage
                         image={slide.brand.logoLight ?? slide.brand.logo}
                         alt={slide.brand.name}
-                        sizes="(min-width: 640px) 192px, 128px"
+                        sizes="(min-width: 640px) 256px, 192px"
                         className="object-contain object-left"
                       />
                     </div>
