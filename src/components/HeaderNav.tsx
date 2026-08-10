@@ -14,9 +14,9 @@ type Props = {
 };
 
 const LANGUAGE_PATHS: Record<AboutLanguage["language"], string> = {
-  pt: "/sobre",
   es: "/sobre-nosotros",
   en: "/about",
+  pt: "/sobre",
 };
 
 export function HeaderNav({ logo, brands, languages }: Props) {
