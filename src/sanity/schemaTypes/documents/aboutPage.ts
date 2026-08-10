@@ -34,7 +34,7 @@ export const aboutPage = defineType({
     defineField({
       name: "menuLabel",
       title: "Texto no menu",
-      description: 'Ex.: "Sobre Nos (PT)", "Sobre Nosotros (ES)", "About Us (EN)", "Sobre Nos (PT)".',
+      description: 'Ex.: "Sobre Nos (PT)", "Sobre Nosotros (ES)", "About Us (EN)".',
       type: "string",
       validation: (rule) => rule.required(),
     }),
