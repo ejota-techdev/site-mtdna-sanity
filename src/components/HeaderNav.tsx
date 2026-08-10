@@ -19,6 +19,23 @@ const LANGUAGE_PATHS: Record<AboutLanguage["language"], string> = {
   en: "/about",
 };
 
+/**
+ * Ordem de exibicao no menu "Sobre" — a mesma da lista do campo no Studio,
+ * do idioma principal do site para o menos usado.
+ *
+ * Precisa existir porque `aboutLanguagesQuery` traz os documentos em
+ * `order(language asc)`, e alfabeticamente "en" < "es" < "pt": o menu saia
+ * exatamente ao contrario (Ingles, Espanhol, Portugues).
+ *
+ * `Record` e nao array de proposito: se um idioma novo entrar no tipo, o
+ * TypeScript quebra aqui ate alguem decidir a posicao dele.
+ */
+const LANGUAGE_ORDER: Record<AboutLanguage["language"], number> = {
+  pt: 0,
+  es: 1,
+  en: 2,
+};
+
 export function HeaderNav({ logo, brands, languages }: Props) {
   const pathname = usePathname();
   const [openMenu, setOpenMenu] = useState<"brands" | "about" | null>(null);
@@ -52,6 +69,11 @@ export function HeaderNav({ logo, brands, languages }: Props) {
 
   const linkClass = "text-brand-navy transition-colors hover:text-brand-teal";
   const linkMobile = `${linkClass} flex min-h-11 items-center`;
+
+  // Copia antes de ordenar: `sort` altera o array no lugar, e este vem do pai.
+  const orderedLanguages = [...languages].sort(
+    (a, b) => LANGUAGE_ORDER[a.language] - LANGUAGE_ORDER[b.language],
+  );
 
   return (
     <header className="sticky top-0 z-50 bg-white shadow-sm w-full">
@@ -160,7 +182,7 @@ export function HeaderNav({ logo, brands, languages }: Props) {
             </button>
             {openMenu === "about" && (
               <Dropdown>
-                {languages.map((language) => (
+                {orderedLanguages.map((language) => (
                   <DropdownLink
                     key={language._id}
                     href={LANGUAGE_PATHS[language.language]}
@@ -239,7 +261,7 @@ export function HeaderNav({ logo, brands, languages }: Props) {
                 Sobre
               </p>
               <ul className="flex flex-col pl-4">
-                {languages.map((language) => (
+                {orderedLanguages.map((language) => (
                   <li key={language._id}>
                     <Link
                       href={LANGUAGE_PATHS[language.language]}
