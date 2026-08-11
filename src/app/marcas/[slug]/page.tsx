@@ -55,6 +55,15 @@ export default async function BrandPage({ params }: Props) {
     ];
   }
 
+  // 📝 Lógica para dividir o texto da Unlock e remover espaços fantasmas
+  let unlockTopText = "";
+  let unlockSideText = "";
+  if (slug === "unlock" && brand.featureText) {
+    const parts = brand.featureText.split(/\n+/).map(p => p.trim()).filter((p) => p !== "");
+    unlockTopText = parts[0] || ""; // O primeiro parágrafo
+    unlockSideText = parts.slice(1).join("\n\n"); // O restante dos parágrafos
+  }
+
   return (
     <>
       <Header />
@@ -77,17 +86,17 @@ export default async function BrandPage({ params }: Props) {
         {slug === "unlock" ? (
           /* ================= LAYOUT EXCLUSIVO DA UNLOCK ================= */
           <>
-            {/* Bloco 1: Apenas o Mapa e o texto associado a ele (Sem a duplicação em cima) */}
-            <section className="container-mtdna py-12 md:py-16">
+            {/* Bloco 1: Apenas o Mapa */}
+            <section className="container-mtdna pt-0 pb-12 md:pt-2 md:pb-16">
               {brand.showLocationMap && (
-                <figure className="mx-auto max-w-3xl mb-10">
+                <figure className="mx-auto mb-10 max-w-5xl">
                   <Image
                     src="/decor/mapa-unlock.png"
                     alt={`Mapa de Portugal com os destinos da ${brand.name}`}
                     width={1068}
                     height={1511}
                     className="h-auto w-full"
-                    sizes="(min-width: 768px) 576px, 100vw"
+                    sizes="(min-width: 1024px) 1024px, 100vw"
                     unoptimized
                   />
                   <figcaption className="sr-only">
@@ -97,8 +106,8 @@ export default async function BrandPage({ params }: Props) {
               )}
 
               {brand.locationsIntro && (
-                <div className="mb-8 max-w-4xl mx-auto text-center md:text-left">
-                  <p className="text-neutral-700 leading-relaxed text-sm md:text-base">
+                <div className="mb-8 max-w-5xl">
+                  <p className="text-neutral-700 leading-relaxed text-base md:text-lg">
                     {brand.locationsIntro}
                   </p>
                 </div>
@@ -113,18 +122,26 @@ export default async function BrandPage({ params }: Props) {
                     {brand.featureTitle}
                   </h2>
                 )}
-                {brand.featureText && (
-                  <p className="text-neutral-700 whitespace-pre-line text-base leading-relaxed opacity-90 md:text-lg max-w-5xl">
-                    {brand.featureText}
+                {unlockTopText && (
+                  <p className="text-neutral-700 whitespace-pre-line text-lg leading-relaxed opacity-90 md:text-xl text-left">
+                    {unlockTopText}
                   </p>
                 )}
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-end">
-                {/* Lado Esquerdo: Botão e Nota */}
-                <div className="flex flex-col gap-6 order-2 md:order-1 pb-4">
+              {/* 👇 MUDANÇA AQUI: Trocado "items-center" por "items-start" para puxar o texto pro topo! */}
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-10 items-start">
+                
+                {/* Lado Esquerdo: Texto, Botão e Nota */}
+                <div className="flex flex-col items-start text-left w-full gap-6 md:col-span-4 order-2 md:order-1">
+                  {unlockSideText && (
+                    <p className="text-neutral-700 whitespace-pre-line text-lg leading-relaxed opacity-90 md:text-xl w-full">
+                      {unlockSideText}
+                    </p>
+                  )}
+
                   {brand.featureCta && (
-                    <div>
+                    <div className="mt-2">
                       <a
                         href={brand.featureCta.href}
                         target="_blank"
@@ -137,19 +154,19 @@ export default async function BrandPage({ params }: Props) {
                     </div>
                   )}
                   {brand.featureNote && (
-                    <p className="text-neutral-500 text-xs leading-relaxed max-w-sm mt-2">
+                    <p className="text-neutral-500 text-xs leading-relaxed max-w-sm mt-1">
                       {brand.featureNote}
                     </p>
                   )}
                 </div>
 
-                {/* Lado Direito: Imagem com recorte no canto superior esquerdo */}
-                <div className="relative aspect-[4/3] w-full overflow-hidden rounded-tl-[100px] md:aspect-video order-1 md:order-2">
+                {/* Lado Direito (Ocupa 8 colunas - Estica a foto mais para a esquerda) */}
+                <div className="relative aspect-video w-full overflow-hidden rounded-tl-[100px] rounded-br-[100px] md:col-span-8 order-1 md:order-2">
                   {brand.featureImage && (
                     <SanityImage
                       image={brand.featureImage}
                       alt={brand.name}
-                      sizes="(min-width: 768px) 50vw, 100vw"
+                      sizes="(min-width: 768px) 70vw, 100vw"
                       className="object-cover w-full h-full"
                     />
                   )}
