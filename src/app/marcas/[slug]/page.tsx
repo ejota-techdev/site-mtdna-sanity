@@ -129,10 +129,9 @@ export default async function BrandPage({ params }: Props) {
                 )}
               </div>
 
-              {/* 👇 MUDANÇA AQUI: Trocado "items-center" por "items-start" para puxar o texto pro topo! */}
               <div className="grid grid-cols-1 md:grid-cols-12 gap-10 items-start">
                 
-                {/* Lado Esquerdo: Texto, Botão e Nota */}
+                {/* Lado Esquerdo (Ocupa 4 colunas) */}
                 <div className="flex flex-col items-start text-left w-full gap-6 md:col-span-4 order-2 md:order-1">
                   {unlockSideText && (
                     <p className="text-neutral-700 whitespace-pre-line text-lg leading-relaxed opacity-90 md:text-xl w-full">
@@ -160,8 +159,9 @@ export default async function BrandPage({ params }: Props) {
                   )}
                 </div>
 
-                {/* Lado Direito (Ocupa 8 colunas - Estica a foto mais para a esquerda) */}
-                <div className="relative aspect-video w-full overflow-hidden rounded-tl-[100px] rounded-br-[100px] md:col-span-8 order-1 md:order-2">
+                {/* Lado Direito (Ocupa 8 colunas - BORDAS INDIVIDUAIS APLICADAS AQUI) */}
+                {/* 👇 Você pode editar os valores de [100px] e [0px] abaixo para controlar cada canto! */}
+                <div className="relative aspect-video w-full overflow-hidden rounded-tl-none rounded-tr-[0px] rounded-br-[100px] rounded-bl-[0px] md:col-span-8 order-1 md:order-2">
                   {brand.featureImage && (
                     <SanityImage
                       image={brand.featureImage}
