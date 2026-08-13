@@ -113,7 +113,10 @@ export const brandBySlugQuery = defineQuery(`
     logoLight ${IMAGE},
     heroImage ${IMAGE},
     tagline,
-    pageLayout, featureImageSide, featureCtaAlign,
+    slides[] {
+      tagline,
+      image ${IMAGE}
+    },
     introTitle, introText,
     featureTitle, featureText, featureNote,
     featureImage ${IMAGE},
