@@ -75,6 +75,66 @@ export const brand = defineType({
     }),
 
     // ---------- Conteudo ----------
+
+    /*
+     * Layout da pagina, controlado pelo painel.
+     *
+     * Cada marca tem um wireframe proprio e eles nao sao iguais: na Europcar
+     * o texto fica a esquerda e a foto a direita, com o botao alinhado a
+     * esquerda; na Goldcar e o espelho disso, com o botao centralizado; a
+     * Unlock tem uma pagina de estrutura diferente, com o mapa.
+     *
+     * Antes isso vivia como `if (slug === "unlock")` dentro da pagina, o que
+     * obrigava a mexer no codigo a cada marca nova. Como campo, quem cadastra
+     * a marca escolhe no Studio.
+     */
+    defineField({
+      name: "pageLayout",
+      title: "Modelo da pagina",
+      description:
+        "Padrao serve para a maioria das marcas. Unlock tem o mapa de destinos e uma ordem diferente dos blocos.",
+      type: "string",
+      group: "content",
+      options: {
+        list: [
+          { title: "Padrao", value: "padrao" },
+          { title: "Unlock (com mapa)", value: "unlock" },
+        ],
+        layout: "radio",
+      },
+      initialValue: "padrao",
+    }),
+    defineField({
+      name: "featureImageSide",
+      title: "Lado da imagem no bloco de destaque",
+      description:
+        "De que lado a foto do bloco de destaque aparece. O texto vai para o lado oposto.",
+      type: "string",
+      group: "content",
+      options: {
+        list: [
+          { title: "Direita", value: "direita" },
+          { title: "Esquerda", value: "esquerda" },
+        ],
+        layout: "radio",
+      },
+      initialValue: "direita",
+    }),
+    defineField({
+      name: "featureCtaAlign",
+      title: "Alinhamento do botao de acao",
+      type: "string",
+      group: "content",
+      options: {
+        list: [
+          { title: "Esquerda", value: "esquerda" },
+          { title: "Centro", value: "centro" },
+        ],
+        layout: "radio",
+      },
+      initialValue: "esquerda",
+    }),
+
     defineField({
       name: "introTitle",
       title: "Titulo de abertura",
