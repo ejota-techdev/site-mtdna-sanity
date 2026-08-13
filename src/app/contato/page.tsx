@@ -52,10 +52,30 @@ export default async function ContatoPage() {
         {/* ---------- Formulário + informações ---------- */}
         <section className="container-mtdna py-16">
           
-          <div className="grid gap-14 md:grid-cols-2">
-            
+          {/*
+            Flex centralizado, e nao grade de 2 colunas.
+
+            `container-mtdna` tem max-width de 90rem (1728px) e a coluna da
+            direita e bem mais estreita que a da esquerda (formulario 614px,
+            informacoes 296px). Com `grid-cols-2` as duas faixas ficavam do
+            mesmo tamanho, entao a da direita sobrava vazia e o conjunto todo
+            puxava para a esquerda — era o que o cliente estava vendo.
+
+            Com flex cada bloco fica do tamanho do proprio conteudo e
+            `justify-center` centraliza o PAR, deixando a mesma folga dos dois
+            lados.
+
+            `flex-wrap` em vez de `flex-col md:flex-row` de proposito: neste
+            projeto o `md:flex-row` nao vence o `flex-col` no CSS gerado (o
+            `flex-direction` continuava `column` mesmo com o breakpoint
+            valendo). Com `flex-wrap` nao existe classe concorrente: a direcao
+            e sempre linha, e no mobile o formulario (`w-full`) ocupa a linha
+            inteira e empurra as informacoes para a linha de baixo sozinho.
+          */}
+          <div className="flex flex-wrap items-start justify-center gap-14 md:gap-20">
+
             {/* COLUNA DA ESQUERDA: Título + Formulário */}
-            <div className="mx-auto w-full max-w-lg">
+            <div className="w-full max-w-lg">
               {/* O título foi movido para cá, dentro da coluna! */}
               <h2 className="text-brand-teal mb-12 text-3xl font-bold">
                 {page?.formTitle ?? "Decole seu negócio com a gente!"}
@@ -68,7 +88,7 @@ export default async function ContatoPage() {
             </div>
 
             {/* COLUNA DA DIREITA: Informações de contato */}
-            <div className="flex flex-col gap-10">
+            <div className="flex w-fit shrink-0 flex-col gap-10">
               {/* Agora esse componente vai subir e alinhar com o h2 da esquerda */}
               <ContactInfo settings={settings} title={page?.infoTitle} />
 
