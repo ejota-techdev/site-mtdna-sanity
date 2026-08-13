@@ -12,6 +12,19 @@
 
   --radius-card: 2rem;
   --radius-pill: 9999px;
+
+  /*
+   * Raio das celulas da grade de marcas da Home. Medido no wireframe
+   * `Home.png` a 1440px: os cantos arredondados variam de 40 a 52px.
+   *
+   * Existe como token do tema, e nao como `rounded-tl-[48px]` direto na
+   * classe, porque o scanner do Tailwind so gera a regra quando o valor
+   * entre colchetes esta sozinho na string. Em
+   * `"rounded-tr-[48px] rounded-bl-[48px]"` ele nao gera nenhuma das duas, e
+   * a grade sai reta sem nenhum erro aparecer. Com token nomeado
+   * (`rounded-tr-cell`) nao ha colchete e o problema some.
+   */
+  --radius-cell: 48px;
 }
 
 /*
@@ -40,6 +53,55 @@
 
 @utility corner-tr-flat {
   border-radius: var(--radius-card) 0 var(--radius-card) var(--radius-card);
+}
+
+/*
+ * Painel expansivel dos cards de destaque da Home.
+ *
+ * `grid-template-rows: 0fr -> 1fr` anima a altura sem precisar saber quanto o
+ * conteudo mede. Com `max-height` seria preciso chutar um teto, e a animacao
+ * "corre" no final sempre que o chute passa da altura real — o texto vem do
+ * painel do Sanity, entao nao da para saber o tamanho de antemao.
+ *
+ * Em CSS simples, e nao em utilitaria do Tailwind, porque neste projeto as
+ * utilitarias novas nem sempre chegam ao CSS gerado.
+ */
+.painel-expansivel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 450ms ease-out;
+}
+
+.painel-expansivel[data-aberto="true"] {
+  grid-template-rows: 1fr;
+}
+
+/* Precisa cortar o conteudo enquanto a linha do grid ainda tem altura zero. */
+.painel-expansivel > * {
+  overflow: hidden;
+}
+
+/* O texto entra um pouco depois da altura, para nao parecer que "salta". */
+.painel-conteudo {
+  opacity: 0;
+  transition: opacity 200ms ease-out 150ms;
+}
+
+.painel-expansivel[data-aberto="true"] .painel-conteudo {
+  opacity: 1;
+}
+
+/* Altura da capa: 200px fechada, 125px aberta. */
+.capa-expansivel {
+  transition: height 450ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .painel-expansivel,
+  .painel-conteudo,
+  .capa-expansivel {
+    transition: none;
+  }
 }
 
 html {
