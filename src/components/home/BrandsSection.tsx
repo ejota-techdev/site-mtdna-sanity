@@ -2,6 +2,77 @@ import Link from "next/link";
 import { SanityImage } from "@/components/SanityImage";
 import type { HomeBrand } from "@/sanity/lib/types";
 
+/** Raio dos cantos arredondados da grade, em px. */
+const R = 48;
+
+/** `[superior-esq, superior-dir, inferior-dir, inferior-esq]`, como no CSS. */
+type Cantos = [number, number, number, number];
+
+/**
+ * Cantos arredondados de cada celula da grade de marcas.
+ *
+ * Medidos no wireframe `Home.png` a 1440px: 3 linhas de 272px numa grade de
+ * 1103px com 4px de gap, e raios entre 40 e 52px — 48px aqui.
+ *
+ * O desenho e um zigue-zague, e so os cantos que "olham" para dentro do S
+ * sao arredondados. Nao da para gerar por formula a partir do indice: a
+ * ultima linha foge do padrao das duas primeiras (o texto fica todo reto e a
+ * foto arredonda so em cima a esquerda), entao a tabela e literal mesmo.
+ *
+ * VIA `style` INLINE, E NAO CLASSE DO TAILWIND, de proposito.
+ *
+ * Neste projeto o scanner do Tailwind nao gera parte das utilitarias novas —
+ * `rounded-tr-[48px]`, `rounded-bl-[48px]`, `gap-[5px]` e o token de tema
+ * `rounded-*-cell` foram todos ignorados, sem erro nenhum aparecer, e a
+ * grade saia inteira reta. Foi assim que a versao anterior deste componente,
+ * que ja listava `md:rounded-*-[60px]` em toda celula, nunca chegou a
+ * arredondar nada na tela.
+ *
+ * Como o mapa de cantos e dado medido, e nao estilo ad hoc, passar direto no
+ * `style` e mais honesto e nao depende do scanner. Se um dia a geracao de
+ * CSS do projeto for consertada, da para voltar para classes.
+ */
+const CANTOS: Record<number, { texto: Cantos; foto: Cantos }> = {
+  //    marca            [ tl, tr, br, bl ]
+  0: { texto: [0, 0, R, 0], foto: [0, R, 0, R] },
+  1: { texto: [R, 0, 0, R], foto: [0, R, R, 0] },
+  2: { texto: [0, R, 0, 0], foto: [R, 0, 0, 0] },
+};
+
+/** Para a 4a marca em diante, cadastrada depois no Sanity. */
+const CANTOS_PADRAO: { texto: Cantos; foto: Cantos } = {
+  texto: [0, 0, R, 0],
+  foto: [R, 0, 0, 0],
+};
+
+/** Monta o `border-radius` a partir da tupla. */
+const raio = ([tl, tr, br, bl]: Cantos) =>
+  `${tl}px ${tr}px ${br}px ${bl}px`;
+
+/**
+ * Caixa do logo dentro do card, por marca.
+ *
+ * `object-contain` encaixa o logo na caixa preservando a proporcao, entao
+ * quem manda no tamanho final e a dimensao mais apertada. Europcar e Goldcar
+ * sao praticamente so a palavra — largos e baixos, enchem a largura. A Unlock
+ * e um lockup de brasao + duas linhas de texto, bem mais alto em proporcao:
+ * ele bate no teto de altura da caixa antes de usar a largura e acaba
+ * aparecendo bem menor que os outros dois. Uma caixa maior so para ela
+ * reequilibra o conjunto, sem mexer nas demais.
+ *
+ * Em `rem` no `style` inline, e nao em classe: `w-64` nao esta no CSS gerado
+ * deste projeto e era ignorado (a caixa esticava ate a largura do card),
+ * enquanto `h-16` funcionava por ja existir em outro lugar. Os valores sao os
+ * mesmos das utilitarias que deveriam ter sido usadas — `w-44`/`h-10` viram
+ * 11rem/2.5rem, `w-64`/`h-16` viram 16rem/4rem — entao continuam
+ * acompanhando o `font-size` da raiz como o resto do layout.
+ */
+const CAIXA_LOGO: Record<string, { largura: string; altura: string; sizes: string }> = {
+  unlock: { largura: "16rem", altura: "4rem", sizes: "307px" },
+};
+
+const CAIXA_LOGO_PADRAO = { largura: "11rem", altura: "2.5rem", sizes: "176px" };
+
 /**
  * Faixa de logos + grade alternada de marcas.
  */
@@ -43,56 +114,28 @@ export function BrandsSection({
       <section className="container-mtdna py-8">
         <h2 className="text-brand-teal mb-8 text-3xl font-bold">{title}</h2>
 
-        {/* 
-          ⚠️ MUDANÇA AQUI:
-          Substituímos o 'gap-4' por 'gap-[2px]' para criar a linha branca bem fininha separando os itens.
+        {/*
+          `gap-1` (4.8px) e nao `gap-[5px]`: o wireframe mostra 4px de linha
+          branca entre as celulas, e o valor entre colchetes tambem nao estava
+          sendo gerado — o grid saia sem gap nenhum.
         */}
-        <div className="grid gap-[5px] md:grid-cols-2">
+        <div className="grid gap-1 md:grid-cols-2">
           {brands.map((brand, i) => {
             const textFirst = i % 2 === 0;
+            const cantos = CANTOS[i] ?? CANTOS_PADRAO;
+            const caixaLogo = CAIXA_LOGO[brand.slug] ?? CAIXA_LOGO_PADRAO;
 
-            // =====================================================================
-            // CONTROLE INDIVIDUAL DE ARREDONDAMENTO POR QUADRADINHO
-            // =====================================================================
-            // Dica: Use 'rounded-3xl' para arredondar tudo no celular, e adicione
-            // 'md:rounded-tr-none' (por exemplo) para tirar o arredondamento no Desktop.
-            // Posições: tl (top-left), tr (top-right), bl (bottom-left), br (bottom-right).
-            
-            let cardCorners = "";
-            let photoCorners = "";
-
-            switch (i) {
-              case 0: 
-                // 1ª LINHA (Ex: Europcar) - Texto Esq / Foto Dir
-                cardCorners  = "rounded-3xl md:rounded-br-[60px] md:rounded-tl-none md:rounded-tr-none md:rounded-bl-none"; // Texto: Canto inferior direito reto
-                photoCorners = "rounded-3xl md:rounded-bl-[60px] md:rounded-tl-none md:rounded-tr-[60px] md:rounded-br-none"; // Foto: Canto inferior esquerdo reto
-                break;
-                
-              case 1: 
-                // 2ª LINHA (Ex: Goldcar) - Foto Esq / Texto Dir
-                photoCorners = "rounded-3xl md:rounded-br-[60px] md:rounded-tl-none md:rounded-tr-[60px] md:rounded-bl-none"; // Foto: Canto inferior direito reto
-                cardCorners  = "rounded-3xl md:rounded-bl-[60px] md:rounded-tl-[60px] md:rounded-tr-none md:rounded-br-none"; // Texto: Canto inferior esquerdo reto
-                break;
-                
-              case 2: 
-                // 3ª LINHA (Ex: Unlock) - Texto Esq / Foto Dir
-                // EXEMPLO CUSTOMIZADO: Arredondamento enorme em cima, reto embaixo
-                cardCorners  = "rounded-3xl md:rounded-tl-none md:rounded-br-none md:rounded-tr-[60px] md:rounded-bl-none"; // Texto: Canto superior esquerdo reto
-                photoCorners = "rounded-3xl md:rounded-tr-none md:rounded-bl-none md:rounded-tl-[60px] md:rounded-br-none"; // Foto: Canto superior direito reto
-                break;
-
-              default:
-                // REGRA PADRÃO (Caso você cadastre a 4ª, 5ª, 6ª marca lá no Sanity)
-                cardCorners  = textFirst ? "rounded-3xl md:rounded-br-none" : "rounded-3xl md:rounded-bl-none";
-                photoCorners = textFirst ? "rounded-3xl md:rounded-bl-none" : "rounded-3xl md:rounded-br-none";
-                break;
-            }
-            // =====================================================================
-
-            const renderCard = (cornerClasses: string) => (
+            const renderCard = (cantosDaCelula: Cantos) => (
               <Link
                 href={`/marcas/${brand.slug}`}
-                className={`bg-brand-teal group relative flex min-h-[280px] flex-col justify-center gap-5 p-8 text-white transition-all duration-300 hover:opacity-95 ${cornerClasses}`}
+                /*
+                  `minWidth: 0` libera o item do grid a encolher. Sem isso ele
+                  vale `min-content`, e a caixa de 16rem do logo da Unlock
+                  empurrava a coluna para 384px numa tela de 375px — a Home
+                  ganhava rolagem horizontal no celular.
+                */
+                style={{ borderRadius: raio(cantosDaCelula), minWidth: 0 }}
+                className="bg-brand-teal group relative flex min-h-[280px] flex-col justify-center gap-5 p-8 text-white transition-all duration-300 hover:opacity-95"
               >
                 <span
                   className="absolute top-6 right-8 text-3xl leading-none text-white/90"
@@ -101,11 +144,24 @@ export function BrandsSection({
                   +
                 </span>
 
-                <span className="relative block h-10 w-44">
+                <span
+                  className="relative block"
+                  /*
+                    `maxWidth: 100%` e obrigatorio: a caixa da Unlock tem
+                    16rem (307px) e, somada ao `p-8` do card, empurrava a
+                    coluna do grid para 384px numa tela de 375px — a Home
+                    ganhava rolagem horizontal no celular.
+                  */
+                  style={{
+                    width: caixaLogo.largura,
+                    height: caixaLogo.altura,
+                    maxWidth: "100%",
+                  }}
+                >
                   <SanityImage
                     image={brand.logoLight ?? brand.logo}
                     alt={brand.name}
-                    sizes="176px"
+                    sizes={caixaLogo.sizes}
                     className="object-contain object-left"
                   />
                 </span>
@@ -116,8 +172,11 @@ export function BrandsSection({
               </Link>
             );
 
-            const renderPhoto = (cornerClasses: string) => (
-              <div className={`relative min-h-[280px] overflow-hidden ${cornerClasses}`}>
+            const renderPhoto = (cantosDaCelula: Cantos) => (
+              <div
+                style={{ borderRadius: raio(cantosDaCelula) }}
+                className="relative min-h-[280px] overflow-hidden"
+              >
                 <SanityImage
                   image={brand.homeCardImage}
                   alt={brand.name}
@@ -131,13 +190,13 @@ export function BrandsSection({
               <div key={brand._id} className="contents">
                 {textFirst ? (
                   <>
-                    {renderCard(cardCorners)}
-                    {renderPhoto(photoCorners)}
+                    {renderCard(cantos.texto)}
+                    {renderPhoto(cantos.foto)}
                   </>
                 ) : (
                   <>
-                    {renderPhoto(photoCorners)}
-                    {renderCard(cardCorners)}
+                    {renderPhoto(cantos.foto)}
+                    {renderCard(cantos.texto)}
                   </>
                 )}
               </div>
