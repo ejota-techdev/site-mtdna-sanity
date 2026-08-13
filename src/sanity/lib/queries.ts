@@ -8,14 +8,14 @@ export const brandsNavQuery = defineQuery(`
   *[_type == "brand"] | order(order asc) {
     _id, name, "slug": slug.current
   }
-`);
+`) as any;
 
 /** Idiomas disponiveis da pagina Sobre, para o dropdown do menu. */
 export const aboutLanguagesQuery = defineQuery(`
   *[_type == "aboutPage"] | order(language asc) {
     _id, language, menuLabel
   }
-`);
+`) as any;
 
 export const siteSettingsQuery = defineQuery(`
   *[_type == "siteSettings"][0] {
@@ -27,7 +27,7 @@ export const siteSettingsQuery = defineQuery(`
     whatsappUrl,
     footerCredit
   }
-`);
+`) as any;
 
 export const homePageQuery = defineQuery(`
   *[_type == "homePage"][0] {
@@ -49,7 +49,7 @@ export const homePageQuery = defineQuery(`
     contactTitle,
     contactFormTitle
   }
-`);
+`) as any;
 
 /** Marcas com os campos que a Home exibe nos cards. */
 export const homeBrandsQuery = defineQuery(`
@@ -60,7 +60,7 @@ export const homeBrandsQuery = defineQuery(`
     logo ${IMAGE},
     logoLight ${IMAGE}
   }
-`);
+`) as any;
 
 /** Artigo em destaque da Home (o card grande). */
 export const featuredPostQuery = defineQuery(`
@@ -68,7 +68,7 @@ export const featuredPostQuery = defineQuery(`
     _id, title, "slug": slug.current, excerpt, publishedAt,
     coverImage ${IMAGE}
   }
-`);
+`) as any;
 
 /**
  * Demais artigos da Home. Exclui o destaque para nao repetir o mesmo card.
@@ -79,7 +79,7 @@ export const recentPostsQuery = defineQuery(`
     _id, title, "slug": slug.current, excerpt, publishedAt,
     coverImage ${IMAGE}
   }
-`);
+`) as any;
 
 /** Listagem paginada de /publicacoes. */
 export const postsPageQuery = defineQuery(`
@@ -87,9 +87,9 @@ export const postsPageQuery = defineQuery(`
     _id, title, "slug": slug.current, excerpt, publishedAt,
     coverImage ${IMAGE}
   }
-`);
+`) as any;
 
-export const postsCountQuery = defineQuery(`count(*[_type == "post"])`);
+export const postsCountQuery = defineQuery(`count(*[_type == "post"])`) as any;
 
 export const postBySlugQuery = defineQuery(`
   *[_type == "post" && slug.current == $slug][0] {
@@ -100,11 +100,11 @@ export const postBySlugQuery = defineQuery(`
       _type == "image" => ${IMAGE}
     }
   }
-`);
+`) as any;
 
 export const postSlugsQuery = defineQuery(`
   *[_type == "post" && defined(slug.current)][].slug.current
-`);
+`) as any;
 
 export const brandBySlugQuery = defineQuery(`
   *[_type == "brand" && slug.current == $slug][0] {
@@ -127,11 +127,11 @@ export const brandBySlugQuery = defineQuery(`
     showLocationMap, locationsIntro, locations,
     website, websiteUrl, phone, email
   }
-`);
+`) as any;
 
 export const brandSlugsQuery = defineQuery(`
   *[_type == "brand" && defined(slug.current)][].slug.current
-`);
+`) as any;
 
 export const aboutPageByLanguageQuery = defineQuery(`
   *[_type == "aboutPage" && language == $language][0] {
@@ -145,7 +145,7 @@ export const aboutPageByLanguageQuery = defineQuery(`
     ctaImage ${IMAGE},
     ctaButton
   }
-`);
+`) as any;
 
 export const contactPageQuery = defineQuery(`
   *[_type == "contactPage"][0] {
@@ -155,4 +155,4 @@ export const contactPageQuery = defineQuery(`
     whatsappTitle, whatsappButtonLabel,
     successMessage
   }
-`);
+`) as any;
