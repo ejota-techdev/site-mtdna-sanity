@@ -45,7 +45,7 @@ administrador precisa convidar seu e-mail em
 npm run dev
 ```
 
-- Site: http://localhost:3000
+- Site:. http://localhost:3000
 - Painel de conteúdo: http://localhost:3000/studio
 
 O CORS do Sanity já autoriza `http://localhost:3000` para todo mundo — não
