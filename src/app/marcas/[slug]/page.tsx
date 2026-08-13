@@ -15,6 +15,102 @@ export const revalidate = 60;
 
 type Props = { params: Promise<{ slug: string }> };
 
+type OpcoesDeLayout = {
+  pageLayout: "padrao" | "unlock";
+  featureImageSide: "esquerda" | "direita";
+  featureCtaAlign: "esquerda" | "centro";
+};
+
+/*
+ * Valores usados enquanto os campos novos nao forem preenchidos no Studio.
+ *
+ * As tres marcas ja estavam cadastradas quando `pageLayout`,
+ * `featureImageSide` e `featureCtaAlign` passaram a existir, e o
+ * `initialValue` da schema so vale para documento novo — elas chegam aqui sem
+ * valor nenhum. Sem esta tabela a Europcar renderizaria com o layout da
+ * Goldcar ate alguem abrir o painel.
+ *
+ * Os valores saem dos wireframes `Marcas - Europcar/Goldcar/UnLock.png`.
+ *
+ * ISTO E TRANSITORIO: assim que os campos estiverem preenchidos nas marcas,
+ * a tabela pode ser apagada. O que vem do painel sempre tem prioridade.
+ */
+const PADRAO_POR_SLUG: Record<string, OpcoesDeLayout> = {
+  europcar: {
+    pageLayout: "padrao",
+    featureImageSide: "direita",
+    featureCtaAlign: "esquerda",
+  },
+  goldcar: {
+    pageLayout: "padrao",
+    featureImageSide: "esquerda",
+    featureCtaAlign: "centro",
+  },
+  unlock: {
+    pageLayout: "unlock",
+    featureImageSide: "direita",
+    featureCtaAlign: "esquerda",
+  },
+};
+
+const PADRAO_GERAL: OpcoesDeLayout = {
+  pageLayout: "padrao",
+  featureImageSide: "direita",
+  featureCtaAlign: "esquerda",
+};
+
+/*
+ * Canto da foto do bloco de destaque: 3 arestas a 90 graus + o inferior
+ * direito arredondado.
+ *
+ * 88px medidos nos wireframes `Marcas - Europcar`, `Marcas - Goldcar` e
+ * `Marcas - UnLock` (canvas de 1440px). O perfil do arco e identico nos tres
+ * — recuo de 0, 2, 4, 8, 13, 19, 27, 38, 54 e 86px nos ultimos 90px de
+ * altura —, entao e o mesmo raio para todas as marcas. Estava 120px nas duas
+ * primeiras e 100px na Unlock.
+ *
+ * No `style` e nao em `rounded-br-[88px]`: utilitaria nova nao chega ao CSS
+ * gerado neste projeto.
+ */
+const RAIO_FOTO_DESTAQUE = "0 0 88px 0";
+
+/** `[superior-esq, superior-dir, inferior-dir, inferior-esq]`, como no CSS. */
+type Cantos = [number, number, number, number];
+
+/*
+ * Caixas de destaque (os retangulos de borda coral).
+ *
+ * Medidos nos wireframes da Europcar e da Goldcar: borda de 4px e raio de
+ * 22px nos cantos arredondados. O codigo usava 3px de borda e raios de 30px
+ * e 60px.
+ *
+ * O desenho e diagonal e depende de quantas caixas existem, nao do lado da
+ * imagem: com 3 caixas numa fileira, so a primeira (superior esquerdo) e a
+ * ultima (inferior direito) arredondam; com 6 em duas fileiras, arredondam os
+ * quatro cantos externos do conjunto. Por isso sao duas tabelas e nao uma
+ * formula — com 3 caixas os cantos `tr` e `bl` do conjunto ficam retos, o que
+ * uma formula de "cantos externos" nao pegaria.
+ */
+const RAIO_CAIXA = 22;
+const BORDA_CAIXA = "4px";
+
+const CANTOS_CAIXAS_3: Cantos[] = [
+  [RAIO_CAIXA, 0, 0, 0], // 1ª: superior esquerdo
+  [0, 0, 0, 0], // 2ª: reta
+  [0, 0, RAIO_CAIXA, 0], // 3ª: inferior direito
+];
+
+const CANTOS_CAIXAS_6: Cantos[] = [
+  [RAIO_CAIXA, 0, 0, 0], // 1ª: superior esquerdo
+  [0, 0, 0, 0],
+  [0, RAIO_CAIXA, 0, 0], // 3ª: superior direito
+  [0, 0, 0, RAIO_CAIXA], // 4ª: inferior esquerdo
+  [0, 0, 0, 0],
+  [0, 0, RAIO_CAIXA, 0], // 6ª: inferior direito
+];
+
+const raio = ([tl, tr, br, bl]: Cantos) => `${tl}px ${tr}px ${br}px ${bl}px`;
+
 export async function generateStaticParams() {
   const slugs = await client.fetch<string[]>(brandSlugsQuery);
   return (slugs ?? []).map((slug) => ({ slug }));
@@ -35,30 +131,19 @@ export default async function BrandPage({ params }: Props) {
 
   if (!brand) notFound();
 
-  // 🎨 ARREDONDAMENTOS INDIVIDUAIS DINÂMICOS:
-  let bordaDosQuadrados: string[] = [];
+  // O que vem do painel manda; a tabela so cobre marca ainda sem os campos.
+  const padrao = PADRAO_POR_SLUG[slug] ?? PADRAO_GERAL;
+  const layout = brand.pageLayout ?? padrao.pageLayout;
+  const ladoDaImagem = brand.featureImageSide ?? padrao.featureImageSide;
+  const alinhamentoCta = brand.featureCtaAlign ?? padrao.featureCtaAlign;
 
-  if (slug === "goldcar") {
-    bordaDosQuadrados = [
-      "rounded-tl-[30px]",  // 1º Quadrado: Canto superior esquerdo
-      "rounded-none",       // 2º Quadrado: Reto
-      "rounded-tr-none rounded-br-[60px]",  // 3º Quadrado: Canto inferior direito
-    ];
-  } else {
-    bordaDosQuadrados = [
-      "rounded-tl-[30px]",       // 1º Quadrado
-      "rounded-none",            // 2º Quadrado
-      "rounded-tr-[30px]",       // 3º Quadrado
-      "rounded-bl-[30px]",       // 4º Quadrado
-      "rounded-none",            // 5º Quadrado
-      "rounded-br-[30px]",       // 6º Quadrado
-    ];
-  }
+  const cantosDasCaixas =
+    (brand.highlights?.length ?? 0) <= 3 ? CANTOS_CAIXAS_3 : CANTOS_CAIXAS_6;
 
   // 📝 Lógica para dividir o texto da Unlock e remover espaços fantasmas
   let unlockTopText = "";
   let unlockSideText = "";
-  if (slug === "unlock" && brand.featureText) {
+  if (layout === "unlock" && brand.featureText) {
     const parts = brand.featureText.split(/\n+/).map(p => p.trim()).filter((p) => p !== "");
     unlockTopText = parts[0] || ""; // O primeiro parágrafo
     unlockSideText = parts.slice(1).join("\n\n"); // O restante dos parágrafos
@@ -83,7 +168,7 @@ export default async function BrandPage({ params }: Props) {
         {/* BIFURCAÇÃO DE LAYOUT: UNLOCK vs OUTRAS MARCAS */}
         {/* ====================================================================== */}
 
-        {slug === "unlock" ? (
+        {layout === "unlock" ? (
           /* ================= LAYOUT EXCLUSIVO DA UNLOCK ================= */
           <>
             {/* Bloco 1: Apenas o Mapa */}
@@ -159,9 +244,15 @@ export default async function BrandPage({ params }: Props) {
                   )}
                 </div>
 
-                {/* Lado Direito (Ocupa 8 colunas - BORDAS INDIVIDUAIS APLICADAS AQUI) */}
-                {/* 👇 Você pode editar os valores de [100px] e [0px] abaixo para controlar cada canto! */}
-                <div className="relative aspect-video w-full overflow-hidden rounded-tl-none rounded-tr-[0px] rounded-br-[100px] rounded-bl-[0px] md:col-span-8 order-1 md:order-2">
+                {/*
+                  Lado direito (8 colunas). O canto vem de `RAIO_FOTO_DESTAQUE`,
+                  o mesmo das outras marcas — o wireframe da Unlock tem o
+                  arco identico ao da Europcar e da Goldcar.
+                */}
+                <div
+                  className="relative aspect-video w-full overflow-hidden md:col-span-8 order-1 md:order-2"
+                  style={{ borderRadius: RAIO_FOTO_DESTAQUE }}
+                >
                   {brand.featureImage && (
                     <SanityImage
                       image={brand.featureImage}
@@ -180,9 +271,21 @@ export default async function BrandPage({ params }: Props) {
             {/* ---------- Destaque em duas colunas (Imagem esq / Intro dir) ---------- */}
             {(brand.introTitle || brand.introText || brand.featureImage) && (
               <section className="container-mtdna py-12 md:py-16">
+                {/*
+                  A ordem das colunas vem do painel (`Lado da imagem no bloco
+                  de destaque`). No wireframe da Europcar a foto fica a
+                  direita; no da Goldcar, a esquerda. `order` em vez de
+                  reordenar o JSX para o texto continuar vindo antes da imagem
+                  na ordem de leitura do documento.
+                */}
                 <div className="grid gap-10 items-center md:grid-cols-2 lg:gap-16">
-                  
-                  <div className="relative aspect-[4/3] w-full overflow-hidden rounded-br-[120px] md:aspect-video">
+                  <div
+                    className="relative aspect-[4/3] w-full overflow-hidden md:aspect-video"
+                    style={{
+                      order: ladoDaImagem === "esquerda" ? 0 : 1,
+                      borderRadius: RAIO_FOTO_DESTAQUE,
+                    }}
+                  >
                     {brand.featureImage && (
                       <SanityImage
                         image={brand.featureImage}
@@ -193,7 +296,10 @@ export default async function BrandPage({ params }: Props) {
                     )}
                   </div>
 
-                  <div className="flex flex-col gap-6">
+                  <div
+                    className="flex flex-col gap-6"
+                    style={{ order: ladoDaImagem === "esquerda" ? 1 : 0 }}
+                  >
                     {brand.introTitle && (
                       <h2 className="text-brand-navy text-3xl font-bold leading-tight md:text-4xl">
                         {brand.introTitle}
@@ -205,7 +311,6 @@ export default async function BrandPage({ params }: Props) {
                       </p>
                     )}
                   </div>
-
                 </div>
               </section>
             )}
@@ -227,7 +332,19 @@ export default async function BrandPage({ params }: Props) {
                 </div>
 
                 {brand.featureCta && (
-                  <div className="mt-12 flex justify-center md:mt-16">
+                  /*
+                    Alinhamento do botao vem do painel: no wireframe da
+                    Europcar ele fica encostado a esquerda, no da Goldcar
+                    centralizado. `justifyContent` no `style` porque
+                    `justify-start` nao esta no CSS gerado deste projeto.
+                  */
+                  <div
+                    className="mt-12 flex md:mt-16"
+                    style={{
+                      justifyContent:
+                        alinhamentoCta === "centro" ? "center" : "flex-start",
+                    }}
+                  >
                     <a
                       href={brand.featureCta.href}
                       target="_blank"
@@ -281,7 +398,19 @@ export default async function BrandPage({ params }: Props) {
               {brand.highlights.map((item, index) => (
                 <li
                   key={item}
-                  className={`border-brand-coral border-[4px] text-brand-navy flex min-h-[140px] items-center justify-center px-5 py-6 text-center text-sm font-bold md:text-base leading-snug ${bordaDosQuadrados[index] || "rounded-[20px]"}`}
+                  /*
+                    Borda e cantos no `style`: os valores medidos (4px e 22px)
+                    virariam `border-[4px]`/`rounded-tl-[22px]`, utilitarias
+                    novas que nao chegam ao CSS gerado neste projeto. Caixa
+                    alem da tabela fica reta.
+                  */
+                  style={{
+                    borderWidth: BORDA_CAIXA,
+                    borderStyle: "solid",
+                    borderColor: "var(--color-brand-coral)",
+                    borderRadius: raio(cantosDasCaixas[index] ?? [0, 0, 0, 0]),
+                  }}
+                  className="text-brand-navy flex min-h-[140px] items-center justify-center px-5 py-6 text-center text-sm leading-snug font-bold md:text-base"
                 >
                   {item}
                 </li>
