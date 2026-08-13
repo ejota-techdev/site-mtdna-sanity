@@ -113,6 +113,13 @@ export type Brand = {
   logoLight?: SanityImage;
   heroImage?: SanityImage;
   tagline?: string;
+  /*
+   * Layout escolhido no Studio. Opcionais porque as marcas cadastradas antes
+   * destes campos existirem vem sem valor — a pagina cai num padrao.
+   */
+  pageLayout?: "padrao" | "unlock";
+  featureImageSide?: "esquerda" | "direita";
+  featureCtaAlign?: "esquerda" | "centro";
   introTitle?: string;
   introText?: string;
   featureTitle?: string;
