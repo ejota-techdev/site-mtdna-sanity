@@ -22,11 +22,11 @@ type Cantos = [number, number, number, number];
  * VIA `style` INLINE, E NAO CLASSE DO TAILWIND, de proposito.
  *
  * Neste projeto o scanner do Tailwind nao gera parte das utilitarias novas —
- * `rounded-tr-[48px]`, `rounded-bl-[48px]`, `gap-[5px]` e o token de tema
- * `rounded-*-cell` foram todos ignorados, sem erro nenhum aparecer, e a
- * grade saia inteira reta. Foi assim que a versao anterior deste componente,
- * que ja listava `md:rounded-*-[60px]` em toda celula, nunca chegou a
- * arredondar nada na tela.
+ * `rounded-tr-[48px]`, `rounded-bl-[48px]` e `gap-[5px]` foram todos
+ * ignorados, sem erro nenhum aparecer, e a grade saia inteira reta. Foi assim
+ * que a versao anterior deste componente, que ja listava
+ * `md:rounded-*-[60px]` em toda celula, nunca chegou a arredondar nada na
+ * tela. Tentar via token de tema (`rounded-*-cell`) tambem nao funcionou.
  *
  * Como o mapa de cantos e dado medido, e nao estilo ad hoc, passar direto no
  * `style` e mais honesto e nao depende do scanner. Se um dia a geracao de

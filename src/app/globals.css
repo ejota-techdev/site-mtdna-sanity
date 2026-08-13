@@ -12,19 +12,6 @@
 
   --radius-card: 2rem;
   --radius-pill: 9999px;
-
-  /*
-   * Raio das celulas da grade de marcas da Home. Medido no wireframe
-   * `Home.png` a 1440px: os cantos arredondados variam de 40 a 52px.
-   *
-   * Existe como token do tema, e nao como `rounded-tl-[48px]` direto na
-   * classe, porque o scanner do Tailwind so gera a regra quando o valor
-   * entre colchetes esta sozinho na string. Em
-   * `"rounded-tr-[48px] rounded-bl-[48px]"` ele nao gera nenhuma das duas, e
-   * a grade sai reta sem nenhum erro aparecer. Com token nomeado
-   * (`rounded-tr-cell`) nao ha colchete e o problema some.
-   */
-  --radius-cell: 48px;
 }
 
 /*
