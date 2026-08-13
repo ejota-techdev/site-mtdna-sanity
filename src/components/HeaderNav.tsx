@@ -103,17 +103,26 @@ export function HeaderNav({ logo, brands, languages }: Props) {
          * entre o fim do logo (x=233) e o inicio do menu (x=380) no Figma.
          * Em rem para acompanhar quem aumenta a fonte do navegador.
          */
-        className="mx-auto flex w-full max-w-[90rem] items-center gap-6 px-5 py-4 md:px-6 lg:gap-[9.1875rem] lg:px-7 lg:py-6"
+        className="mx-auto flex w-full max-w-[90rem] items-center gap-6 px-5 py-3 md:px-6 lg:gap-[9.1875rem] lg:px-7 lg:py-4"
       >
+        {/*
+          Barra mais fina, a pedido do cliente.
+          Lembrar que `html` tem `font-size: 19.2px`, entao 1rem = 19.2px e
+          nao 16px: `lg:h-20` da 96px de logo, nao 80px. Contas em desktop —
+          antes: logo 6.5rem (125px) + py-6 (2x29px) = 182px de barra;
+          agora: logo 5rem (96px) + py-4 (2x19px) = 134px, ~26% mais baixa.
+          A proporcao 205:104 do arquivo do logo e mantida (96 x 189) para
+          ele nao distorcer.
+        */}
         <Link
           href="/"
-          className="relative block h-16 w-[7.875rem] shrink-0 lg:h-[6.5rem] lg:w-[12.8125rem]"
+          className="relative block h-14 w-[6.9rem] shrink-0 lg:h-20 lg:w-[9.85rem]"
         >
           {logo ? (
             <SanityImage
               image={logo}
               alt="My Travel DNA"
-              sizes="(min-width: 1024px) 205px, 126px"
+              sizes="(min-width: 1024px) 189px, 133px"
               className="object-contain object-left"
               priority
             />
