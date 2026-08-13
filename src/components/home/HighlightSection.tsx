@@ -68,15 +68,57 @@ export function HighlightSection({
           return (
             <article
               key={i}
-              className={estaAberto ? "flex flex-col" : "h-[200px]"}
+              className="flex flex-col"
+              /*
+                A BORDA FICA AQUI, no card inteiro — nao na caixa de texto.
+                Medido no wireframe 10: em y=270 e y=285 ha pixel de borda em
+                x=1270, mas nessas alturas a imagem ja curvou para x~1263 e
+                x~1248 por causa do canto inferior direito arredondado. Ou
+                seja, a caixa com borda comeca no TOPO da imagem e a imagem
+                fica por cima; onde o canto dela recua, aparece a borda por
+                tras. Com a borda so na caixa de texto (como estava), a linha
+                nascia embaixo da foto e nao encostava nela.
+
+                Sem borda em cima: no topo a imagem cobre a largura toda, e o
+                wireframe nao mostra traco algum ali.
+              */
+              style={
+                estaAberto
+                  ? {
+                      borderWidth: "0 1px 1px 1px",
+                      borderStyle: "solid",
+                      borderColor: "var(--color-brand-teal)",
+                      borderBottomRightRadius: "44px",
+                      background: "#fff",
+                    }
+                  : undefined
+              }
             >
               <button
                 type="button"
                 onClick={() => setAberto(estaAberto ? null : i)}
                 aria-expanded={estaAberto}
-                className={`group relative w-full shrink-0 overflow-hidden rounded-br-[48px] text-left ${
-                  estaAberto ? "h-[125px]" : "h-full"
-                }`}
+                /*
+                  Altura no `style` para poder animar entre dois valores
+                  concretos — `h-full` nao transiciona, o navegador nao sabe
+                  para onde ir.
+
+                  A foto sangra 1px para cada lado, cobrindo as bordas
+                  laterais do card — no wireframe a borda esquerda e a lateral
+                  da foto estao no mesmo x (744), a foto nao fica para dentro
+                  da linha.
+
+                  Precisa da largura explicita junto com a margem negativa: so
+                  a margem nao resolve, porque `w-full` trava a largura em 100%
+                  e ai a margem negativa da direita nao alarga nada — desloca
+                  o elemento sem estica-lo, e sobrava um fio da borda a direita.
+                */
+                style={{
+                  height: estaAberto ? "125px" : "200px",
+                  marginLeft: estaAberto ? "-1px" : undefined,
+                  width: estaAberto ? "calc(100% + 2px)" : undefined,
+                }}
+                className="capa-expansivel group relative w-full shrink-0 overflow-hidden rounded-br-[48px] text-left"
               >
                 <SanityImage
                   image={card.image}
@@ -100,12 +142,31 @@ export function HighlightSection({
                 </span>
               </button>
 
-              {/*min-h reproduz os 293px do wireframe; cresce se o texto pedir. */}
-              {estaAberto && card.body && (
-                <div className="border-brand-teal bg-white min-h-[293px] rounded-tr-none rounded-br-[44px] border -mt-[1px] px-6 py-6">
-                  <p className="text-sm leading-relaxed whitespace-pre-line text-neutral-700">
-                    {card.body}
-                  </p>
+              {/*
+                Sempre montado (quando ha texto), e nao `estaAberto && ...`:
+                um elemento que nasce ja aberto nao tem de onde animar. Quem
+                abre e fecha e o `data-aberto`.
+              */}
+              {card.body && (
+                <div
+                  className="painel-expansivel"
+                  data-aberto={estaAberto ? "true" : "false"}
+                >
+                  <div>
+                    {/*
+                      Sem borda propria: quem desenha e o `article`. Aqui so o
+                      respiro interno. `min-height` reproduz os 293px do
+                      wireframe e cresce se o texto pedir.
+                    */}
+                    <div
+                      className="painel-conteudo px-6 py-6"
+                      style={{ minHeight: "293px" }}
+                    >
+                      <p className="text-sm leading-relaxed whitespace-pre-line text-neutral-700">
+                        {card.body}
+                      </p>
+                    </div>
+                  </div>
                 </div>
               )}
             </article>
