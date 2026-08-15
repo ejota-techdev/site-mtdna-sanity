@@ -12,7 +12,8 @@ export function AboutBand({
 }) {
   return (
     <section className="bg-brand-teal relative overflow-hidden py-24">
-      <div className="relative mx-auto flex max-w-[800px] flex-col items-center gap-12 px-6">
+      {/* 485px e a largura do bloco de texto medida no wireframe. */}
+      <div className="relative mx-auto flex max-w-[485px] flex-col items-center gap-12 px-6">
         {/*
           Grafismos laterais.
           Ancorados ao bloco de texto (`right-full` / `left-full`), nunca a
@@ -35,7 +36,7 @@ export function AboutBand({
         />
         <div className="flex flex-col gap-6 text-left">
           {text?.map((paragraph, i) => (
-            <p key={i} className="text-[25px] leading-relaxed text-white">
+            <p key={i} className="leading-relaxed text-white">
               {paragraph}
             </p>
           ))}

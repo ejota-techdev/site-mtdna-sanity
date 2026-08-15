@@ -91,14 +91,50 @@
   }
 }
 
+/*
+ * Largura do slide do carrossel principal (HeroCarousel, na Home).
+ *
+ * Abaixo de 768px o slide ocupa a tela inteira (sem pedaco de vizinho
+ * aparecendo do lado) — igual ao carrossel da pagina de marca da Unlock.
+ * Dali para cima volta ao card com vizinhos espiando, como no wireframe do
+ * Figma. Como variavel CSS lida em media query, e nao no `style` inline do
+ * componente: `style` nao aceita breakpoint, e um valor so nao serve para as
+ * duas telas.
+ */
+.hero-track {
+  --slide: 100vw;
+}
+
+@media (min-width: 768px) {
+  .hero-track {
+    --slide: min(81vw, 1172px);
+  }
+}
+
 html {
   scroll-behavior: smooth;
-  /* 
-   * Trava a escala base em 120% nativamente.
-   * Todos os espaçamentos, fontes e margens do Tailwind (que usam rem)
-   * ficarão 20% maiores, imunes à quebra de escala do Linux ou Windows.
+  /*
+   * SEM font-size aqui — terceira vez que isto e removido deste arquivo.
+   * Por favor NAO reintroduzir (nem como 120%, nem como 19.2px fixo, nem
+   * qualquer outro valor): e o mesmo hack, so escrito diferente.
+   *
+   * O que ele causa: 1rem passa a valer 19.2px em vez de 16px, entao TUDO
+   * que usa rem (quase todo o Tailwind) fica 20% maior — inclusive em quem
+   * ja via o site do tamanho certo. Sintoma reportado: o site so "parece
+   * correto" com o navegador em 80% de zoom, porque 1.2 (hack) x 0.8 (zoom)
+   * = 0.96 — quase cancela. O valor exato que cancelaria e 83.3% (1/1.2),
+   * entao 80% "quase acertar" bate exatamente com essa causa.
+   *
+   * O problema real que motivou isto (telas com escala de sistema
+   * operacional diferente mostrando tamanhos diferentes) NAO se resolve
+   * assim: a escala do SO muda a largura CSS que o navegador reporta,
+   * nao o font-size — um font-size fixo nao neutraliza isso, so deixa
+   * tudo maior para todo mundo, inclusive quem ja via certo.
+   *
+   * O cabecalho (HeaderNav.tsx) foi ajustado por pedido do cliente
+   * assumindo 1rem=19.2px como base — conferir as medidas dele depois
+   * de mexer aqui.
    */
-  font-size: 19.2px; 
 }
 
 body {

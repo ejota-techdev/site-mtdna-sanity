@@ -8,7 +8,9 @@ import { Header } from "@/components/Header";
 import { SanityImage } from "@/components/SanityImage";
 import { client } from "@/sanity/lib/client";
 import { brandBySlugQuery, brandSlugsQuery } from "@/sanity/lib/queries";
-import type { Brand } from "@/sanity/lib/types";
+import type { Brand, SanityImage as SanityImageType } from "@/sanity/lib/types";
+
+type CarouselSlide = { image?: SanityImageType; tagline?: string; _key?: string };
 
 export const revalidate = 60;
 
@@ -64,13 +66,15 @@ export default async function BrandPage({ params }: Props) {
   }
 
   // 📸 LÓGICA HÍBRIDA E SEGURA (Garante que a tela nunca fique preta)
-  let carouselSlides: Array<{ image: any; tagline?: string; _key?: string }> = [];
-  const brandSlides = (brand as any).slides;
+  let carouselSlides: CarouselSlide[] = [];
+  const brandSlides = brand.slides;
 
   // 1. Tenta usar o formato novo (Slides)
   if (brandSlides && brandSlides.length > 0) {
-    carouselSlides = brandSlides.filter((slide: any) => slide?.image);
-  } 
+    carouselSlides = brandSlides.filter(
+      (slide): slide is CarouselSlide => Boolean(slide?.image),
+    );
+  }
   
   // 2. Se falhar, usa as imagens antigas (Hero + Gallery)
   if (carouselSlides.length === 0) {
@@ -82,7 +86,7 @@ export default async function BrandPage({ params }: Props) {
       });
     }
     if (brand.gallery && brand.gallery.length > 0) {
-      brand.gallery.forEach((img: any, idx: number) => {
+      brand.gallery.forEach((img, idx) => {
         if (img) {
           carouselSlides.push({
             _key: `gallery-${idx}`,
@@ -98,7 +102,6 @@ export default async function BrandPage({ params }: Props) {
   if (carouselSlides.length === 0) {
     carouselSlides.push({
       _key: "fallback-empty",
-      image: null, 
       tagline: brand.tagline,
     });
   }

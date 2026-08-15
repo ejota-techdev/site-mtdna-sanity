@@ -63,15 +63,20 @@ export function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
   // Índice real para iluminar a bolinha certa na paginação (0 até totalOriginal - 1)
   const realIndex = ((index - totalOriginal) % totalOriginal + totalOriginal) % totalOriginal;
 
+  // Sem respiro vertical no mobile: o card ocupa a tela cheia, colado no header.
   return (
-    <section aria-label="Destaques" className="relative overflow-hidden py-6">
+    <section aria-label="Destaques" className="relative overflow-hidden py-0 md:py-6">
+      {/*
+        `.hero-track` define `--slide` por media query (100vw no mobile,
+        min(81vw,1172px) do md para cima) — ver globals.css. `style` nao
+        aceita breakpoint, entao a variavel nao pode ser definida so aqui.
+      */}
       <div
-        className={`flex ${
+        className={`hero-track flex ${
           isTransitioning ? "transition-transform duration-700 ease-out" : ""
         }`}
         style={
           {
-            "--slide": "min(81vw, 1172px)",
             transform: `translateX(calc(50% - ${index} * var(--slide) - var(--slide) / 2))`,
           } as React.CSSProperties
         }
@@ -115,8 +120,13 @@ export function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
             </>
           );
 
-          // Classes base do slide + Efeito de hover se for clicável
-          const slideClasses = `relative block aspect-[16/7] overflow-hidden rounded-[2rem] transition-all duration-500 ${
+          /*
+            Mobile: cheio da tela, sem cantos, altura imersiva — igual ao
+            topo da pagina de marca da Unlock (h-[65vh] min-h-[500px], sem
+            padding lateral, sem raio). Do `md` para cima, volta ao card com
+            proporcao 16/7 e cantos de 2rem, como no wireframe do Figma.
+          */
+          const slideClasses = `relative block h-[65vh] min-h-[500px] w-full overflow-hidden md:aspect-[16/7] md:h-auto md:min-h-0 md:rounded-[2rem] transition-all duration-500 ${
             isActive ? "opacity-100" : "opacity-60"
           } ${hasLink ? "hover:scale-[1.01] hover:shadow-lg" : ""}`;
 
@@ -124,7 +134,7 @@ export function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
             <div
               key={i}
               aria-hidden={!isActive}
-              className="w-[var(--slide)] shrink-0 px-3"
+              className="w-[var(--slide)] shrink-0 px-0 md:px-3"
             >
               {hasLink ? (
                 <Link href={linkHref} className={slideClasses}>

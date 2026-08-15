@@ -113,6 +113,10 @@ export type Brand = {
   logoLight?: SanityImage;
   heroImage?: SanityImage;
   tagline?: string;
+  /**
+   * Formato novo de carrossel (substitui heroImage + gallery quando presente).
+   */
+  slides?: { tagline?: string; image?: SanityImage }[];
   /*
    * Layout escolhido no Studio. Opcionais porque as marcas cadastradas antes
    * destes campos existirem vem sem valor — a pagina cai num padrao.
