@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import { notFound } from "next/navigation";
+import Script from "next/script"; // 👇 Adicionado o Script nativo do Next.js
 
 import { DecorGrid } from "@/components/DecorGrid";
 import { Footer } from "@/components/Footer";
@@ -12,8 +14,7 @@ import type { Brand, SanityImage as SanityImageType } from "@/sanity/lib/types";
 
 type CarouselSlide = { image?: SanityImageType; tagline?: string; _key?: string };
 
-// 👇 MUDANÇA: Cache zerado para você ver as atualizações do Sanity imediatamente!
-export const revalidate = 0; 
+export const revalidate = 0;
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -75,8 +76,7 @@ export default async function BrandPage({ params }: Props) {
     );
   }
 
-  // TRAVA DE SEGURANÇA: Se o cliente não adicionar nenhum slide no painel,
-  // mostra um fundo vazio com a logo para não "quebrar" o site.
+  // TRAVA DE SEGURANÇA
   if (carouselSlides.length === 0) {
     carouselSlides.push({
       _key: "fallback-empty",
@@ -158,31 +158,29 @@ export default async function BrandPage({ params }: Props) {
             </div>
           </div>
 
-          {/* SCRIPT NATIVO (Delegação de Eventos Global) */}
+          {/* 👇 MUDANÇA AQUI: SCRIPT NATIVO usando componente oficial do Next.js */}
           {carouselSlides.length > 1 && (
-            <script
-              dangerouslySetInnerHTML={{
-                __html: `
-                  if (!window.carouselListenerAdded) {
-                    window.carouselListenerAdded = true;
-                    document.addEventListener('click', function(e) {
-                      const btn = e.target.closest('#carousel-next-btn');
-                      if (!btn) return;
-                      
-                      const carousel = document.getElementById('brand-carousel');
-                      if (!carousel) return;
-                      
-                      const isEnd = carousel.scrollLeft >= (carousel.scrollWidth - carousel.clientWidth - 10);
-                      if (isEnd) {
-                        carousel.scrollTo({ left: 0, behavior: 'smooth' }); // Volta pro início
-                      } else {
-                        carousel.scrollBy({ left: carousel.clientWidth, behavior: 'smooth' }); // Avança
-                      }
-                    });
-                  }
-                `,
-              }}
-            />
+            <Script id="carousel-logic" strategy="afterInteractive">
+              {`
+                if (!window.carouselListenerAdded) {
+                  window.carouselListenerAdded = true;
+                  document.addEventListener('click', function(e) {
+                    const btn = e.target.closest('#carousel-next-btn');
+                    if (!btn) return;
+                    
+                    const carousel = document.getElementById('brand-carousel');
+                    if (!carousel) return;
+                    
+                    const isEnd = carousel.scrollLeft >= (carousel.scrollWidth - carousel.clientWidth - 10);
+                    if (isEnd) {
+                      carousel.scrollTo({ left: 0, behavior: 'smooth' }); // Volta pro início
+                    } else {
+                      carousel.scrollBy({ left: carousel.clientWidth, behavior: 'smooth' }); // Avança
+                    }
+                  });
+                }
+              `}
+            </Script>
           )}
         </section>
 
