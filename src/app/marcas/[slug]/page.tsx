@@ -12,7 +12,8 @@ import type { Brand, SanityImage as SanityImageType } from "@/sanity/lib/types";
 
 type CarouselSlide = { image?: SanityImageType; tagline?: string; _key?: string };
 
-export const revalidate = 60;
+// 👇 MUDANÇA: Cache zerado para você ver as atualizações do Sanity imediatamente!
+export const revalidate = 0; 
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -65,40 +66,17 @@ export default async function BrandPage({ params }: Props) {
     unlockSideText = parts.slice(1).join("\n\n"); 
   }
 
-  // 📸 LÓGICA HÍBRIDA E SEGURA (Garante que a tela nunca fique preta)
+  // 📸 LÓGICA ESTRITA: Puxa EXCLUSIVAMENTE os slides novos do painel do Sanity
   let carouselSlides: CarouselSlide[] = [];
-  const brandSlides = brand.slides;
 
-  // 1. Tenta usar o formato novo (Slides)
-  if (brandSlides && brandSlides.length > 0) {
-    carouselSlides = brandSlides.filter(
+  if (brand.slides && brand.slides.length > 0) {
+    carouselSlides = brand.slides.filter(
       (slide): slide is CarouselSlide => Boolean(slide?.image),
     );
   }
-  
-  // 2. Se falhar, usa as imagens antigas (Hero + Gallery)
-  if (carouselSlides.length === 0) {
-    if (brand.heroImage) {
-      carouselSlides.push({
-        _key: "hero-1",
-        image: brand.heroImage,
-        tagline: brand.tagline,
-      });
-    }
-    if (brand.gallery && brand.gallery.length > 0) {
-      brand.gallery.forEach((img, idx) => {
-        if (img) {
-          carouselSlides.push({
-            _key: `gallery-${idx}`,
-            image: img,
-            tagline: brand.tagline,
-          });
-        }
-      });
-    }
-  }
 
-  // 3. TRAVA DE SEGURANÇA: Se mesmo assim a lista estiver vazia
+  // TRAVA DE SEGURANÇA: Se o cliente não adicionar nenhum slide no painel,
+  // mostra um fundo vazio com a logo para não "quebrar" o site.
   if (carouselSlides.length === 0) {
     carouselSlides.push({
       _key: "fallback-empty",
@@ -156,10 +134,10 @@ export default async function BrandPage({ params }: Props) {
                     />
                   </div>
                 )}
-                {/* Pega a Tagline da marca, ou usa a do primeiro slide */}
-                {(brand.tagline || carouselSlides[0]?.tagline) && (
+                {/* Pega a Tagline do primeiro slide, ou usa a geral da marca */}
+                {(carouselSlides[0]?.tagline || brand.tagline) && (
                   <p className="text-white text-base md:text-lg opacity-90 max-w-2xl drop-shadow-md">
-                    {brand.tagline || carouselSlides[0]?.tagline}
+                    {carouselSlides[0]?.tagline || brand.tagline}
                   </p>
                 )}
               </div>
