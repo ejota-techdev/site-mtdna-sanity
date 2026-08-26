@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import Script from "next/script"; // 👇 Adicionado o Script nativo do Next.js
+import Script from "next/script";
 
 import { DecorGrid } from "@/components/DecorGrid";
 import { Footer } from "@/components/Footer";
@@ -38,45 +38,69 @@ export default async function BrandPage({ params }: Props) {
 
   if (!brand) notFound();
 
-  // 🎨 ARREDONDAMENTOS INDIVIDUAIS DINÂMICOS:
+  // 🎨 Lógica Dinâmica das Bordas das Caixinhas (Highlights)
   let bordaDosQuadrados: string[] = [];
 
   if (slug === "goldcar") {
     bordaDosQuadrados = [
-      "rounded-tl-[30px]",  // 1º Quadrado
-      "rounded-none",       // 2º Quadrado
-      "rounded-tr-none rounded-br-[60px]",  // 3º Quadrado
+      "rounded-tl-[30px]",
+      "rounded-none",
+      "rounded-tr-none rounded-br-[60px]",
     ];
   } else {
     bordaDosQuadrados = [
-      "rounded-tl-[30px]",       // 1º Quadrado
-      "rounded-none",            // 2º Quadrado
-      "rounded-tr-[30px]",       // 3º Quadrado
-      "rounded-bl-[30px]",       // 4º Quadrado
-      "rounded-none",            // 5º Quadrado
-      "rounded-br-[30px]",       // 6º Quadrado
+      "rounded-tl-[30px]",
+      "rounded-none",
+      "rounded-tr-[30px]",
+      "rounded-bl-[30px]",
+      "rounded-none",
+      "rounded-br-[30px]",
     ];
+  }
+
+  // 📸 LÓGICA DINÂMICA DAS BORDAS DA IMAGEM DO CARRO (Apenas Europcar!)
+  let featureImageClasses = "relative w-full aspect-[4/5] md:aspect-[5/6] lg:aspect-[6/7] overflow-hidden rounded-[2rem] rounded-br-[140px] order-1 md:order-2";
+
+  if (slug === "europcar") {
+    const imageCorners = (brand as any).featureImageCorners ?? { 
+      topLeft: false, 
+      topRight: false, 
+      bottomLeft: false, 
+      bottomRight: true 
+    };
+    
+    const imgTL = imageCorners.topLeft ? "rounded-tl-[2rem]" : "rounded-tl-none";
+    const imgTR = imageCorners.topRight ? "rounded-tr-[2rem]" : "rounded-tr-none";
+    const imgBL = imageCorners.bottomLeft ? "rounded-bl-[2rem]" : "rounded-bl-none";
+    const imgBR = imageCorners.bottomRight ? "rounded-br-[140px]" : "rounded-br-none";
+    
+    featureImageClasses = `relative w-full aspect-[4/5] md:aspect-[5/6] lg:aspect-[6/7] overflow-hidden ${imgTL} ${imgTR} ${imgBL} ${imgBR} order-1 md:order-2`;
   }
 
   // 📝 Lógica para dividir o texto da Unlock e remover espaços fantasmas
   let unlockTopText = "";
   let unlockSideText = "";
   if (slug === "unlock" && brand.featureText) {
-    const parts = brand.featureText.split(/\n+/).map(p => p.trim()).filter((p) => p !== "");
+    const parts = brand.featureText.split(/\n+/).map((p) => p.trim()).filter((p) => p !== "");
     unlockTopText = parts[0] || ""; 
     unlockSideText = parts.slice(1).join("\n\n"); 
   }
 
-  // 📸 LÓGICA ESTRITA: Puxa EXCLUSIVAMENTE os slides novos do painel do Sanity
+  // 📸 LÓGICA DE IMAGENS DO TOPO
   let carouselSlides: CarouselSlide[] = [];
 
   if (brand.slides && brand.slides.length > 0) {
     carouselSlides = brand.slides.filter(
       (slide): slide is CarouselSlide => Boolean(slide?.image),
     );
+  } else if (brand.heroImage) {
+    carouselSlides.push({
+      _key: "hero-single",
+      image: brand.heroImage,
+      tagline: brand.tagline,
+    });
   }
 
-  // TRAVA DE SEGURANÇA
   if (carouselSlides.length === 0) {
     carouselSlides.push({
       _key: "fallback-empty",
@@ -90,11 +114,10 @@ export default async function BrandPage({ params }: Props) {
 
       <main>
         {/* ====================================================================== */}
-        {/* TOPO: CARROSSEL DE IMAGENS                                             */}
+        {/* TOPO: CARROSSEL / BANNER DE IMAGEM                                     */}
         {/* ====================================================================== */}
         <section className="relative w-full h-[65vh] min-h-[500px] md:h-[80vh] bg-brand-navy overflow-hidden">
           
-          {/* Scroll Container do Carrossel (APENAS AS IMAGENS ROLAM AQUI DENTRO) */}
           <div 
             id="brand-carousel"
             className="flex h-full w-full overflow-x-auto snap-x snap-mandatory scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
@@ -104,7 +127,7 @@ export default async function BrandPage({ params }: Props) {
                 {slide.image && (
                   <SanityImage
                     image={slide.image}
-                    alt={`${brand.name} - Slide ${idx + 1}`}
+                    alt={`${brand.name} - Imagem ${idx + 1}`}
                     sizes="100vw"
                     className="object-cover w-full h-full"
                   />
@@ -113,16 +136,11 @@ export default async function BrandPage({ params }: Props) {
             ))}
           </div>
 
-          {/* 👇 ELEMENTOS FIXOS (Fora do container de rolagem) 👇 */}
-
-          {/* Gradiente Escuro no Rodapé (Fixo) */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
 
-          {/* Conteúdo sobreposto FIXO (Logo, Tagline e Botão Próxima) */}
           <div className="absolute inset-0 flex items-end pb-12 md:pb-16 pointer-events-none">
             <div className="container-mtdna w-full pointer-events-auto flex items-end justify-between">
               
-              {/* Lado Esquerdo: Logo e Texto */}
               <div className="flex-1 pr-4">
                 {(brand.logoLight || brand.logo) && (
                   <div className="relative h-14 w-56 md:h-20 md:w-72 mb-4">
@@ -134,7 +152,6 @@ export default async function BrandPage({ params }: Props) {
                     />
                   </div>
                 )}
-                {/* Pega a Tagline do primeiro slide, ou usa a geral da marca */}
                 {(carouselSlides[0]?.tagline || brand.tagline) && (
                   <p className="text-white text-base md:text-lg opacity-90 max-w-2xl drop-shadow-md">
                     {carouselSlides[0]?.tagline || brand.tagline}
@@ -142,7 +159,6 @@ export default async function BrandPage({ params }: Props) {
                 )}
               </div>
 
-              {/* Lado Direito: Botão de próximo */}
               {carouselSlides.length > 1 && (
                 <button 
                   id="carousel-next-btn"
@@ -158,7 +174,6 @@ export default async function BrandPage({ params }: Props) {
             </div>
           </div>
 
-          {/* 👇 MUDANÇA AQUI: SCRIPT NATIVO usando componente oficial do Next.js */}
           {carouselSlides.length > 1 && (
             <Script id="carousel-logic" strategy="afterInteractive">
               {`
@@ -173,9 +188,9 @@ export default async function BrandPage({ params }: Props) {
                     
                     const isEnd = carousel.scrollLeft >= (carousel.scrollWidth - carousel.clientWidth - 10);
                     if (isEnd) {
-                      carousel.scrollTo({ left: 0, behavior: 'smooth' }); // Volta pro início
+                      carousel.scrollTo({ left: 0, behavior: 'smooth' });
                     } else {
-                      carousel.scrollBy({ left: carousel.clientWidth, behavior: 'smooth' }); // Avança
+                      carousel.scrollBy({ left: carousel.clientWidth, behavior: 'smooth' });
                     }
                   });
                 }
@@ -185,11 +200,11 @@ export default async function BrandPage({ params }: Props) {
         </section>
 
         {/* ====================================================================== */}
-        {/* BIFURCAÇÃO DE LAYOUT: UNLOCK vs OUTRAS MARCAS */}
+        {/* BIFURCAÇÃO DE LAYOUT: UNLOCK vs GOLDCAR vs EUROPCAR (PADRÃO)           */}
         {/* ====================================================================== */}
 
         {slug === "unlock" ? (
-          /* ================= LAYOUT EXCLUSIVO DA UNLOCK ================= */
+          /* ================= 1. LAYOUT EXCLUSIVO DA UNLOCK ================= */
           <>
             <section className="container-mtdna pt-0 pb-12 md:pt-2 md:pb-16">
               {brand.showLocationMap && (
@@ -203,9 +218,7 @@ export default async function BrandPage({ params }: Props) {
                     sizes="(min-width: 1024px) 1024px, 100vw"
                     unoptimized
                   />
-                  <figcaption className="sr-only">
-                    Destinos: {brand.locations?.join(", ")}.
-                  </figcaption>
+                  <figcaption className="sr-only">Destinos: {brand.locations?.join(", ")}.</figcaption>
                 </figure>
               )}
 
@@ -273,14 +286,141 @@ export default async function BrandPage({ params }: Props) {
               </div>
             </section>
           </>
-        ) : (
-          /* ================= LAYOUT PADRÃO (Goldcar, Europcar) ================= */
+        ) : slug === "goldcar" ? (
+          /* ================= 2. LAYOUT EXCLUSIVO DA GOLDCAR ================= */
           <>
-            {(brand.introTitle || brand.introText || brand.featureImage) && (
-              <section className="container-mtdna py-12 md:py-16">
-                <div className="grid gap-10 items-center md:grid-cols-2 lg:gap-16">
+            <section className="container-mtdna py-12 md:py-16">
+              
+              {/* Bloco Superior: Imagem Horizontal na Esquerda, Texto na Direita */}
+              {/* 👇 MUDANÇA: items-start para alinhar o texto pelo topo! */}
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-start mb-10 lg:mb-14">
+                
+                {/* Imagem Horizontal */}
+                {/* 👇 MUDANÇA: lg:aspect-[2/1] para deixar a foto mais "deitada" e com menos altura! */}
+                <div className="lg:col-span-7 relative w-full aspect-video lg:aspect-[2/1] overflow-hidden rounded-br-[120px] order-1">
+                  {brand.featureImage && (
+                    <SanityImage
+                      image={brand.featureImage}
+                      alt={brand.name}
+                      sizes="(min-width: 768px) 60vw, 100vw"
+                      className="object-cover w-full h-full"
+                    />
+                  )}
+                </div>
+
+                {/* Título e Intro na Direita */}
+                <div className="lg:col-span-5 flex flex-col gap-6 order-2 pt-1">
+                  {brand.introTitle && (
+                    <h2 className="text-brand-navy text-3xl font-bold leading-tight md:text-4xl lg:text-[2.5rem] tracking-tight">
+                      {brand.introTitle}
+                    </h2>
+                  )}
+                  {brand.introText && (
+                    <p className="text-neutral-700 whitespace-pre-line text-base leading-relaxed opacity-90 md:text-lg">
+                      {brand.introText}
+                    </p>
+                  )}
+                </div>
+
+              </div>
+
+              {/* Bloco Inferior: Textos Extras e Botão Centralizado */}
+              <div className="flex flex-col gap-10">
+                <div className="flex flex-col gap-6 text-left">
+                  {brand.featureTitle && (
+                    <h3 className="text-brand-navy text-2xl font-bold leading-tight md:text-3xl">
+                      {brand.featureTitle}
+                    </h3>
+                  )}
+                  {brand.featureText && (
+                    <p className="text-neutral-700 whitespace-pre-line text-base md:text-lg leading-relaxed opacity-90">
+                      {brand.featureText}
+                    </p>
+                  )}
+                  {brand.featureNote && (
+                    <p className="text-neutral-500 text-sm md:text-base leading-relaxed mt-[-10px]">
+                      {brand.featureNote}
+                    </p>
+                  )}
+                </div>
+
+                {/* Botão Centralizado no Fundo */}
+                {brand.featureCta && (
+                  <div className="flex justify-center mt-4 md:mt-6">
+                    <a
+                      href={brand.featureCta.href}
+                      target="_blank"
+                      rel="noreferrer noopener"
+                      className="bg-brand-coral inline-flex items-center gap-3 rounded-full px-10 py-4 font-bold text-white transition-transform hover:scale-105 hover:opacity-90 text-lg md:text-xl"
+                    >
+                      {brand.featureCta.label}
+                      <span aria-hidden="true" className="text-2xl">→</span>
+                    </a>
+                  </div>
+                )}
+              </div>
+
+            </section>
+          </>
+        ) : (
+          /* ================= 3. LAYOUT PADRÃO (EUROPCAR) ================= */
+          <>
+            {(brand.introTitle || brand.introText) && (
+              <section className="container-mtdna py-12 md:pt-16 md:pb-14">
+                <div className="flex flex-col gap-6 w-full xl:w-[90%]">
+                  {brand.introTitle && (
+                    <h2 className="text-brand-navy text-4xl font-bold leading-[1.15] md:text-5xl lg:text-[3.25rem] xl:text-[3.5rem] tracking-tight">
+                      {brand.introTitle}
+                    </h2>
+                  )}
+                  {brand.introText && (
+                    <p className="text-neutral-700 whitespace-pre-line text-lg leading-relaxed opacity-90 md:text-xl lg:text-[1.35rem] lg:leading-[1.7]">
+                      {brand.introText}
+                    </p>
+                  )}
+                </div>
+              </section>
+            )}
+
+            {(brand.featureTitle || brand.featureText || brand.featureImage || brand.featureCta) && (
+              <section className="container-mtdna pb-20">
+                <div className="grid gap-12 md:grid-cols-2 lg:gap-20 xl:gap-28 items-stretch">
                   
-                  <div className="relative aspect-[4/3] w-full overflow-hidden rounded-br-[120px] md:aspect-video">
+                  <div className="flex flex-col justify-between items-start text-left order-2 md:order-1 h-full w-full py-2">
+                    <div className="flex flex-col gap-6 md:gap-8 w-full">
+                      {brand.featureTitle && (
+                        <h3 className="text-brand-navy text-3xl md:text-4xl lg:text-[2.75rem] xl:text-[3rem] font-bold leading-[1.15] tracking-tight">
+                          {brand.featureTitle}
+                        </h3>
+                      )}
+                      {brand.featureText && (
+                        <p className="text-neutral-700 whitespace-pre-line text-lg md:text-xl lg:text-[1.25rem] leading-relaxed opacity-90">
+                          {brand.featureText}
+                        </p>
+                      )}
+                      {brand.featureNote && (
+                        <p className="text-neutral-500 text-sm md:text-base leading-relaxed mt-[-10px]">
+                          {brand.featureNote}
+                        </p>
+                      )}
+                    </div>
+
+                    {brand.featureCta && (
+                      <div className="mt-10 md:mt-auto">
+                        <a
+                          href={brand.featureCta.href}
+                          target="_blank"
+                          rel="noreferrer noopener"
+                          className="bg-brand-coral inline-flex items-center gap-3 rounded-full px-10 py-5 font-bold text-white transition-transform hover:scale-105 hover:opacity-90 text-xl"
+                        >
+                          {brand.featureCta.label}
+                          <span aria-hidden="true" className="text-2xl">→</span>
+                        </a>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className={featureImageClasses}>
                     {brand.featureImage && (
                       <SanityImage
                         image={brand.featureImage}
@@ -291,51 +431,7 @@ export default async function BrandPage({ params }: Props) {
                     )}
                   </div>
 
-                  <div className="flex flex-col gap-6">
-                    {brand.introTitle && (
-                      <h2 className="text-brand-navy text-3xl font-bold leading-tight md:text-4xl">
-                        {brand.introTitle}
-                      </h2>
-                    )}
-                    {brand.introText && (
-                      <p className="text-neutral-700 whitespace-pre-line text-base leading-relaxed opacity-90 md:text-lg">
-                        {brand.introText}
-                      </p>
-                    )}
-                  </div>
-
                 </div>
-              </section>
-            )}
-
-            {(brand.featureText || brand.featureCta) && (
-              <section className="container-mtdna pb-16">
-                <div className="mx-auto flex max-w-5xl flex-col gap-8 md:mx-0">
-                  {brand.featureText && (
-                    <p className="text-neutral-700 whitespace-pre-line text-base leading-relaxed opacity-90 md:text-lg">
-                      {brand.featureText}
-                    </p>
-                  )}
-                  {brand.featureNote && (
-                    <p className="text-neutral-500 text-xs leading-relaxed">
-                      {brand.featureNote}
-                    </p>
-                  )}
-                </div>
-
-                {brand.featureCta && (
-                  <div className="mt-12 flex justify-center md:mt-16">
-                    <a
-                      href={brand.featureCta.href}
-                      target="_blank"
-                      rel="noreferrer noopener"
-                      className="bg-brand-coral inline-flex items-center gap-2 rounded-full px-8 py-4 font-semibold text-white transition-transform hover:scale-105 hover:opacity-90"
-                    >
-                      {brand.featureCta.label}
-                      <span aria-hidden="true">→</span>
-                    </a>
-                  </div>
-                )}
               </section>
             )}
 

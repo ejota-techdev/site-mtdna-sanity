@@ -120,6 +120,12 @@ export const brandBySlugQuery = defineQuery(`
     introTitle, introText,
     featureTitle, featureText, featureNote,
     featureImage ${IMAGE},
+    featureImageCorners {
+      topLeft,
+      topRight,
+      bottomLeft,
+      bottomRight
+    },
     featureCta,
     highlights,
     gallery[] ${IMAGE},

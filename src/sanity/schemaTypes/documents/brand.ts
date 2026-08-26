@@ -157,6 +157,25 @@ export const brand = defineType({
       type: "figureImage",
       group: "content",
     }),
+    
+    // 👇 CONTROLE DAS BORDAS (Aparece APENAS para a Europcar)
+    defineField({
+      name: "featureImageCorners",
+      title: "Bordas da Imagem de Destaque (Exclusivo Europcar)",
+      description: "Marque para deixar a ponta curva. Desmarque para deixar a ponta reta (quadrada).",
+      type: "object",
+      group: "content",
+      hidden: ({ document }) =>
+        (document?.slug as { current?: string } | undefined)?.current !== "europcar",
+      fields: [
+        defineField({ name: "topLeft", title: "Superior Esquerdo", type: "boolean", initialValue: true }),
+        defineField({ name: "topRight", title: "Superior Direito", type: "boolean", initialValue: true }),
+        defineField({ name: "bottomLeft", title: "Inferior Esquerdo", type: "boolean", initialValue: true }),
+        defineField({ name: "bottomRight", title: "Inferior Direito (Curva Maior)", type: "boolean", initialValue: true }),
+      ],
+      options: { columns: 2 } 
+    }),
+
     defineField({
       name: "featureCta",
       title: "Botao do bloco de destaque",
