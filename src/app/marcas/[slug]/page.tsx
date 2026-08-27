@@ -136,7 +136,14 @@ export default async function BrandPage({ params }: Props) {
             ))}
           </div>
 
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
+          {/* 👇 DEGRADÊ FIXO E DINÂMICO (Azul p/ Unlock, Preto p/ outras) 👇 */}
+          <div 
+            className={`absolute inset-0 bg-gradient-to-t pointer-events-none ${
+              slug === "unlock" 
+                ? "from-[#082a3c] via-[#082a3c]/60 to-transparent" 
+                : "from-black/80 via-black/20 to-transparent"
+            }`} 
+          />
 
           <div className="absolute inset-0 flex items-end pb-12 md:pb-16 pointer-events-none">
             <div className="container-mtdna w-full pointer-events-auto flex items-end justify-between">
@@ -291,12 +298,8 @@ export default async function BrandPage({ params }: Props) {
           <>
             <section className="container-mtdna py-12 md:py-16">
               
-              {/* Bloco Superior: Imagem Horizontal na Esquerda, Texto na Direita */}
-              {/* 👇 MUDANÇA: items-start para alinhar o texto pelo topo! */}
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-start mb-10 lg:mb-14">
                 
-                {/* Imagem Horizontal */}
-                {/* 👇 MUDANÇA: lg:aspect-[2/1] para deixar a foto mais "deitada" e com menos altura! */}
                 <div className="lg:col-span-7 relative w-full aspect-video lg:aspect-[2/1] overflow-hidden rounded-br-[120px] order-1">
                   {brand.featureImage && (
                     <SanityImage
@@ -308,7 +311,6 @@ export default async function BrandPage({ params }: Props) {
                   )}
                 </div>
 
-                {/* Título e Intro na Direita */}
                 <div className="lg:col-span-5 flex flex-col gap-6 order-2 pt-1">
                   {brand.introTitle && (
                     <h2 className="text-brand-navy text-3xl font-bold leading-tight md:text-4xl lg:text-[2.5rem] tracking-tight">
@@ -324,7 +326,6 @@ export default async function BrandPage({ params }: Props) {
 
               </div>
 
-              {/* Bloco Inferior: Textos Extras e Botão Centralizado */}
               <div className="flex flex-col gap-10">
                 <div className="flex flex-col gap-6 text-left">
                   {brand.featureTitle && (
@@ -344,7 +345,6 @@ export default async function BrandPage({ params }: Props) {
                   )}
                 </div>
 
-                {/* Botão Centralizado no Fundo */}
                 {brand.featureCta && (
                   <div className="flex justify-center mt-4 md:mt-6">
                     <a
