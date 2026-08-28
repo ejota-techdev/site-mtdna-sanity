@@ -210,3 +210,4 @@ precisam de redimensionamento.
 - **Marca d'água da newsletter**: aproximação em CSS, não o vetor do Figma.
 - Algumas imagens são substitutos plausíveis, não os originais do wireframe.
   Trocar leva três cliques no painel.
+
