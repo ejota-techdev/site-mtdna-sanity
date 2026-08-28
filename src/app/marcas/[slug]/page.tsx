@@ -279,7 +279,7 @@ export default async function BrandPage({ params }: Props) {
                   )}
                 </div>
 
-                <div className="relative aspect-video w-full overflow-hidden rounded-tl-[100px] rounded-tr-[0px] rounded-br-[100px] rounded-bl-[0px] md:col-span-8 order-1 md:order-2">
+                <div className="relative aspect-video w-full overflow-hidden rounded-br-[140px] md:col-span-8 order-1 md:order-2">
                   {brand.featureImage && (
                     <SanityImage
                       image={brand.featureImage}
