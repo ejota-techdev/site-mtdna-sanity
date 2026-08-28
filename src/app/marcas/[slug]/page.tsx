@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import Script from "next/script";
 
@@ -62,7 +61,7 @@ export default async function BrandPage({ params }: Props) {
   let featureImageClasses = "relative w-full aspect-[4/5] md:aspect-[5/6] lg:aspect-[6/7] overflow-hidden rounded-[2rem] rounded-br-[140px] order-1 md:order-2";
 
   if (slug === "europcar") {
-    const imageCorners = (brand as any).featureImageCorners ?? { 
+    const imageCorners = brand.featureImageCorners ?? {
       topLeft: false, 
       topRight: false, 
       bottomLeft: false, 

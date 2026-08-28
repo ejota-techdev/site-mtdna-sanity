@@ -130,6 +130,13 @@ export type Brand = {
   featureText?: string;
   featureNote?: string;
   featureImage?: SanityImage;
+  /** Exclusivo Europcar — quais cantos da imagem de destaque ficam curvos. */
+  featureImageCorners?: {
+    topLeft?: boolean;
+    topRight?: boolean;
+    bottomLeft?: boolean;
+    bottomRight?: boolean;
+  };
   featureCta?: Cta;
   highlights?: string[];
   gallery?: SanityImage[];
