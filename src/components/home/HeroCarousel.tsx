@@ -85,6 +85,18 @@ export function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
           const isActive = i === index;
           const hasLink = Boolean(slide.brand?.slug);
           const linkHref = slide.brand?.slug ? `/marcas/${slide.brand.slug}` : "#";
+          
+          const slug = slide.brand?.slug;
+
+          // 📱 Ajuste fino do enquadramento apenas no mobile (telas < 768px)
+          let customPositionClass = "object-cover";
+          if (slug === "europcar") {
+            // Desloca o corte para a direita no mobile, enquadrando o carro perfeitamente
+            customPositionClass = "object-cover max-md:object-[75%_center]";
+          } else if (slug === "unlock") {
+            // Ajusta levemente o centro no mobile para a esquerda conforme o corte vertical
+            customPositionClass = "object-cover max-md:object-[65%_center]";
+          }
 
           // Agrupamos o conteúdo interno para não repetir código
           const slideContent = (
@@ -93,7 +105,7 @@ export function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
                 image={slide.image}
                 alt={slide.brand?.name ?? slide.tagline ?? ""}
                 sizes="84vw"
-                className="object-cover"
+                className={customPositionClass}
                 priority={i === totalOriginal}
               />
 

@@ -46,6 +46,17 @@ export default async function BrandPage({ params }: Props) {
       "rounded-none",
       "rounded-tr-none rounded-br-[60px]",
     ];
+  } else if (slug === "europcar") {
+    // 📱 No mobile (max-md), todas as caixas agora ficam com cantos 100% retos (quinas sem arredondamento)
+    // No desktop (md), o design alternado de zigue-zague original é mantido perfeitamente.
+    bordaDosQuadrados = [
+      "md:rounded-tl-[30px] md:rounded-tr-none md:rounded-br-none md:rounded-bl-none max-md:rounded-none",
+      "md:rounded-none max-md:rounded-none",
+      "md:rounded-tr-[30px] md:rounded-tl-none md:rounded-br-none md:rounded-bl-none max-md:rounded-none",
+      "md:rounded-bl-[30px] md:rounded-tl-none md:rounded-tr-none md:rounded-br-none max-md:rounded-none",
+      "md:rounded-none max-md:rounded-none",
+      "md:rounded-br-[30px] md:rounded-tl-none md:rounded-tr-none md:rounded-bl-none max-md:rounded-none",
+    ];
   } else {
     bordaDosQuadrados = [
       "rounded-tl-[30px]",
@@ -81,7 +92,7 @@ export default async function BrandPage({ params }: Props) {
   let unlockSideText = "";
   if (slug === "unlock" && brand.featureText) {
     const parts = brand.featureText.split(/\n+/).map((p) => p.trim()).filter((p) => p !== "");
-    unlockTopText = parts[0] || ""; 
+    unlockTopText = parts[0] ?? ""; 
     unlockSideText = parts.slice(1).join("\n\n"); 
   }
 
@@ -121,18 +132,28 @@ export default async function BrandPage({ params }: Props) {
             id="brand-carousel"
             className="flex h-full w-full overflow-x-auto snap-x snap-mandatory scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
           >
-            {carouselSlides.map((slide, idx) => (
-              <div key={slide._key || idx} className="relative h-full w-full flex-shrink-0 snap-center">
-                {slide.image && (
-                  <SanityImage
-                    image={slide.image}
-                    alt={`${brand.name} - Imagem ${idx + 1}`}
-                    sizes="100vw"
-                    className="object-cover w-full h-full"
-                  />
-                )}
-              </div>
-            ))}
+            {carouselSlides.map((slide, idx) => {
+              // 📱 Ajuste fino do enquadramento apenas no mobile (telas < 768px)
+              let customPositionClass = "object-cover w-full h-full";
+              if (slug === "europcar") {
+                customPositionClass = "object-cover w-full h-full max-md:object-[75%_center]";
+              } else if (slug === "unlock") {
+                customPositionClass = "object-cover w-full h-full max-md:object-[65%_center]";
+              }
+
+              return (
+                <div key={slide._key || idx} className="relative h-full w-full flex-shrink-0 snap-center">
+                  {slide.image && (
+                    <SanityImage
+                      image={slide.image}
+                      alt={`${brand.name} - Imagem ${idx + 1}`}
+                      sizes="100vw"
+                      className={customPositionClass}
+                    />
+                  )}
+                </div>
+              );
+            })}
           </div>
 
           {/* 👇 DEGRADÊ FIXO E DINÂMICO (Azul p/ Unlock, Preto p/ outras) 👇 */}

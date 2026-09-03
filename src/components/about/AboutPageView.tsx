@@ -78,7 +78,12 @@ export async function AboutPageView({
                 {about.services.map((service) => (
                   <li
                     key={service.title}
-                    className="bg-brand-yellow flex flex-col items-center justify-start gap-4 p-5 text-center"
+                    /* 
+                     * 🎨 CORREÇÃO DE RESPONSIVIDADE:
+                     * `last:col-span-2` faz o 5º card ocupar a linha inteira no mobile (centralizando o conteúdo).
+                     * `md:last:col-span-1` garante que em computadores ele volte a ocupar apenas 1 coluna normal.
+                     */
+                    className="bg-brand-yellow flex flex-col items-center justify-start gap-4 p-5 text-center last:col-span-2 md:last:col-span-1"
                   >
                     {service.icon && (
                       <span className="relative block h-14 w-14 shrink-0">
