@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { emailFrom, getResendClient, notificationEmail } from "@/lib/resend";
 import { getWriteClient } from "@/sanity/lib/client";
 
 /** Limites generosos, so para barrar envio abusivo. */
@@ -58,6 +59,22 @@ export async function POST(request: Request) {
       { error: "Não foi possível enviar agora. Tente novamente em instantes." },
       { status: 500 },
     );
+  }
+
+  // Copia por e-mail e so um aviso a mais - a mensagem ja esta salva no
+  // Sanity, entao uma falha aqui nao deve impedir a resposta de sucesso.
+  if (notificationEmail) {
+    try {
+      await getResendClient().emails.send({
+        from: emailFrom,
+        to: notificationEmail,
+        replyTo: email,
+        subject: `Novo contato pelo site — ${name}`,
+        text: `Nome: ${name}\nE-mail: ${email}\nAgencia: ${agency || "-"}\n\nMensagem:\n${message}`,
+      });
+    } catch (error) {
+      console.error("Falha ao enviar e-mail de notificacao (contato):", error);
+    }
   }
 
   return NextResponse.json({ ok: true });

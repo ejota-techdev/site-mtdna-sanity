@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import { NextResponse } from "next/server";
 
+import { emailFrom, getResendClient, notificationEmail } from "@/lib/resend";
 import { getWriteClient } from "@/sanity/lib/client";
 
 const MAX_EMAIL = 160;
@@ -57,6 +58,21 @@ export async function POST(request: Request) {
       { error: "Não foi possível assinar agora. Tente novamente em instantes." },
       { status: 500 },
     );
+  }
+
+  // Copia por e-mail e so um aviso a mais - o assinante ja esta salvo no
+  // Sanity, entao uma falha aqui nao deve impedir a resposta de sucesso.
+  if (notificationEmail) {
+    try {
+      await getResendClient().emails.send({
+        from: emailFrom,
+        to: notificationEmail,
+        subject: "Novo assinante da newsletter",
+        text: `Novo assinante: ${email}`,
+      });
+    } catch (error) {
+      console.error("Falha ao enviar e-mail de notificacao (newsletter):", error);
+    }
   }
 
   return NextResponse.json({ ok: true });

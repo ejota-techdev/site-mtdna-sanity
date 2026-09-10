@@ -158,9 +158,8 @@ Decisoes que valem registrar:
   e-mail, entao assinar varias vezes atualiza o mesmo registro. O e-mail em
   si nao faz parte do id.
 
-> **Ninguem e notificado** quando chega mensagem de contato ou assinatura —
-> os registros ficam esperando no painel. Antes de entregar ao cliente, vale
-> ligar notificacao por e-mail, senao um lead pode passar dias sem ser visto.
+- **Notificação por e-mail** é opcional (ver seção abaixo) — sem configurar,
+  os registros continuam só esperando no painel, como antes.
 
 ## Design tokens
 
@@ -195,6 +194,40 @@ otimizador padrão do Next. Dois motivos:
 
 Imagens de `/public` (ícones, mapa) usam `unoptimized` — são estáticas e não
 precisam de redimensionamento.
+
+## Notificação por e-mail
+
+Toda vez que chega uma mensagem de contato ou um assinante da newsletter, o
+site tenta mandar uma cópia por e-mail — além de gravar no Sanity, como já
+acontecia. Usa o [Resend](https://resend.com) (serviço de e-mail
+transacional, tem plano grátis).
+
+**É opcional.** Sem configurar as variáveis abaixo, tudo continua
+funcionando exatamente como antes — os registros só ficam esperando no
+painel (`Mensagens recebidas` / `Assinantes`).
+
+**Para ativar:**
+
+1. Crie uma conta em [resend.com](https://resend.com) e gere uma API key.
+2. Preencha no `.env.local` (e depois na Vercel, em Settings → Environment
+   Variables):
+   ```
+   RESEND_API_KEY=<a chave gerada>
+   NOTIFICATION_EMAIL=<para onde a copia vai>
+   ```
+3. Pronto — `/api/contato` e `/api/newsletter` passam a mandar a cópia.
+
+> **Modo sandbox (sem domínio verificado):** o Resend só permite mandar
+> e-mail para o endereço da conta que você usou pra criar o cadastro nele.
+> É assim que testamos agora, com um e-mail interno. Para o cliente receber
+> de verdade no e-mail dele, alguém com acesso ao domínio do cliente precisa
+> verificá-lo no painel do Resend (adicionar uns registros de DNS) — depois
+> disso, troque `NOTIFICATION_EMAIL` pelo e-mail do cliente e, se quiser,
+> defina `EMAIL_FROM` para um remetente `@dominiodocliente.com`.
+
+Se o envio falhar (chave errada, fora do ar, etc.), o formulário continua
+funcionando normalmente — a notificação é só um aviso a mais, nunca bloqueia
+o cadastro no Sanity. O erro fica só no log do servidor.
 
 ## Pendências conhecidas
 
